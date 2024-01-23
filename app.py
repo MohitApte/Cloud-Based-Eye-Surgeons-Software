@@ -107,7 +107,40 @@ class Patient():
         self.land = land
         self.misc = misc
         
+def main_page():
+    # Toplevel() is a class in Tkinter used to create independent windows (also known as "top-level windows" or "child windows") that are separate from the main application window (Tk() window). 
+    app = Toplevel(root)
 
+    # retrieve the width of the screen where the app window is currently located.
+    screen_width = app.winfo_screenwidth()
+    # retrieve the height in same way
+    screen_height = app.winfo_screenheight()
+    
+
+    # sets the geometry of the app window to be equal to the width and height of the screen
+    app.geometry("%dx%d" % (screen_width, screen_height))
+    
+    # creates a notebook-style tab control (ttk.Notebook) inside the app window. The tabControl variable is used to reference this tab control.
+    tabControl = ttk.Notebook(app)
+    
+    # creates a frame (ttk.Frame) named tab1 to serve as the content of the first tab. This frame is added as a tab to the tabControl notebook.
+    tab1 = ttk.Frame(tabControl)
+    # tab 2
+    tab2 = ttk.Frame(tabControl)
+
+    # adds tab1 as a tab to the tabControl notebook, with the text label Out Patient Department
+    tabControl.add(tab1, text ='Out Patient Department')
+    # adds tab2 as a tab to the tabControl notebook, with the text label In Patient Department
+    tabControl.add(tab2, text ='In Patient Department')
+
+
+    # This packs the tabControl notebook inside the app window, causing it to expand to fill the available space in both the horizontal and vertical directions.
+    tabControl.pack(expand = 1, fill ="both")
+    
+    # This creates a button (ttk.Button) inside tab1 with the specified text label "New Patient" and associates it with the "new_patient" function. The button is positioned using the grid geometry manager at row 1, column 0 within tab1.
+    ttk.Button(tab1, text="New Patient", command=new_patient).grid(row=1, column=0) 
+    # button in row 1 , col 1 -- "old_patient" function
+    ttk.Button(tab1, text="Old Patient", command=old_patient).grid(row=1, column=1)
 
 
 root = Tk()
