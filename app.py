@@ -236,6 +236,19 @@ def new_patient():
 
     validateSubmit = partial(validateSubmit, mrd,fn,mn,ln,age,sex,address,mob,land,misc)
     submitButton = ttk.Button(tab1, text="Submit", command=validateSubmit).grid(row=20, column=0)
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 def old_patient():
     
@@ -434,6 +447,80 @@ def main_page():
     # button in row 1 , col 1 -- "old_patient" function
     ttk.Button(tab1, text="Old Patient", command=old_patient).grid(row=1, column=1)
 
+    # ****NSD
+    global patient_selected
+    global cur_pat
+
+
+    def patient_selected(doc):
+        global cur_pat
+        # doc is list of values : Values from table , where we clicked and get into here
+        # assign those values to new list called cur_pat
+        cur_pat = doc
+        # retrieve a database named patient_data using client object 
+        db = client.get_database('patient_data')
+        # select a collection named 'patient_name_age' and assign it to a variable 
+        collection = db['patient_name_age']
+        
+
+        # here we will perform database query using pymongo library 
+        # we will run a query to find a specific document in MongoDB collection 
+        cursor = collection.find({"$and": [
+                            {"first_name": {"$regex": str(doc[2]), "$options": "i"}},
+                            {"middle_name": {"$regex": str(doc[3]), "$options": "i"}},
+                            {"last_name": {"$regex": str(doc[4]), "$options": "i"}},
+                        ]})
+        # in above query we have used cursor object which can be used to iterate over retrieved documents 
+        # construct a regex pattern using value present at doc[2] (option i makes regex case insensitive)
+        # and the above regex with another regex which is created using value present at doc[3] and further and this with regex created using value present at doc[4]
+
+        # anding them essentially created a complete regex = {first name , middle name, last name}
+        # we then find it in collection , and return to cursor
+
+        # chatgpt (as above was my written comment):this line of code constructs a query to find documents in the MongoDB collection where the first_name, middle_name, and last_name fields match the corresponding values provided in the doc parameter, using case-insensitive regular expressions.
+
+
+
+        # lets say cursor is list and it will store the matched item from collection
+
+        # let us store value present at cursor[0] in var document ( i can see from mongo db id that cursor[0] represents _id for selected person )
+
+        document = cursor[0]
+
+        # so the name that we will display on top can be created by concating doc[2] , doc[3] , doc[4] from table value lists
+
+        name = doc[2] + ' ' + doc[3] + " " + doc[4]
+
+        # get real time date
+        today = datetime.date.today()
+        # get real time 
+        today_string = today.strftime('%d/%m/%Y')
+
+
+
+        # creates a labeled frame titled "Patient Information" using the ttk.LabelFrame widget from the ttk module. It is placed inside the container tab1.
+        patient_info_frame = ttk.LabelFrame(tab1, text = "Patient Information")
+        # This line specifies the position of the patient_info_frame within its container using the grid geometry manager. It is placed in row 2 and column 0 of the parent widget (tab1).
+        patient_info_frame.grid(row = 2, column = 0)
+        
+
+        # This line creates a label widget inside the patient_info_frame displaying the patient's name. The label's text is set to "Name: " followed by the value of the name variable. The label is placed in row 3 and column 0 within patient_info_frame.
+        ttk.Label(patient_info_frame, text="Name: "+ name, borderwidth=3, relief="ridge").grid(row = 3, column= 0)
+        ttk.Label(patient_info_frame, text="Age: " +str(doc[5]), borderwidth=3, relief="ridge").grid(row = 3, column= 1)
+        ttk.Label(patient_info_frame, text="Sex: "+str(doc[6]), borderwidth=3, relief="ridge").grid(row = 3, column= 2)
+        ttk.Label(patient_info_frame, text="Mob: "+str(doc[8]), borderwidth=3, relief="ridge").grid(row = 3, column= 3)
+        ttk.Label(patient_info_frame, text="Date: "+today_string, borderwidth=3, relief="ridge").grid(row = 3, column= 4)
+        
+
+
+        # create a new frame , named as below , inside tab1 called patient details
+        patient_detail_frame = ttk.LabelFrame(tab1, text = "Patient Details")
+        patient_detail_frame.grid(row = 4, column = 0)
+
+
+
+
+
 
 root = Tk()
 root.geometry("400x150")
@@ -457,6 +544,9 @@ passwordEntry = ttk.Entry(root, textvariable=password, show='*').grid(row=1, col
 validateLogin = partial(validateLogin, username, password)
 #login button
 loginButton = ttk.Button(root, text="Login", command=validateLogin).grid(row=4, column=0)  
+
+
+
 
 
 root.mainloop()
