@@ -92,7 +92,151 @@ def draw_multiline_text(canvas, text, x, y, width, height, font_size):
 
     return remaining_height
 
+def new_patient():
+    
+    def validateSubmit(mrd,fn,mn,ln,age,sex,address,mob,land,misc):
+        today = datetime.date.today()
+        new_pat = Patient(mrd,fn,mn,ln,age,sex,address,mob,land,misc);
+        if ((mob.get().isdigit()) and (land.get().isdigit()) and age.get().isdigit()) and fn.get().isalpha() and mn.get().isalpha() and ln.get().isalpha() and sex.get().isalpha() and address.get().isalnum():
+            today_string = today.strftime('%d/%m/%Y')
+            document = {"MRD":mrd.get(),"first_name":fn.get(),"middle_name":mn.get(),
+                        "last_name":ln.get(),"age":age.get(),"sex":sex.get(),"address":address.get(),"mobile_no":mob.get(),
+                        "land_no":land.get(), "misc":misc.get(),
+                        'rds':'',
+                        'rdc':'',
+                        'rda':'',
+                        'rdv':'',
+                        'rcs':'',
+                        'rcc':'',
+                        'rca':'',
+                        'rcv':'',
+                        'rns':'',
+                        'rnc':'',
+                        'rna':'',
+                        'rnv':'',
+                        'lds':'',
+                        'ldc':'',
+                        'lda':'',
+                        'ldv':'',
+                        'lcs':'',
+                        'lcc':'',
+                        'lca':'',
+                        'lcv':'',
+                        'lns':'',
+                        'lnc':'',
+                        'lna':'',
+                        'lnv':'',
+                        'ipd':'',
+                        'entry1':'',
+                        'entry2':'',
+                        'entry3':'',
+                        'entry4':'',
+                        'complaints':'Cheif Complaints:',
+                        'examination':'Examination:',
+                        'diagnosis':'Diagnosis:',
+                        'medicine':'Medicine:',
+                        'history':'History:',
+                        'advised':'Advised:',
+                        'x':[],
+                        'medname':[],
+                        'medtype':[],
+                        'medadvice':[],
+                        'days':[],
+                        'dwm':[],
+                        'qty':[],
+                        'img_data':'',
+                        'doatxt':'',
+                        't1txt':'',
+                        'dodtxt':'',
+                        't2txt':'',
+                        'cftxt':'',
+                        'opnotestxt':'',
+                        'investigationtxt':'',
+                        'postmedicinetxt':'',
+                        'surgeryadvisingtxt':'',
+                        'adviseondischargetxt':'',
+                        'date':''
+                        }
+            db = client.get_database('patient_data')
+            collection = db['patient_name_age']
+            collection.insert_one(document)
+            
+            cursor = collection.find({"$and": [
+                                {"MRD": {"$regex": mrd.get(), "$options": "i"}},
+                                {"first_name": {"$regex": fn.get(), "$options": "i"}},
+                                {"middle_name": {"$regex": mn.get(), "$options": "i"}},
+                                {"last_name": {"$regex": ln.get(), "$options": "i"}},
+                                {"age": {"$regex": age.get(), "$options": "i"}},
+                                {"address": {"$regex": address.get(), "$options": "i"}},
+                                {"mobile_no": {"$regex": mob.get(), "$options": "i"}},
+                                {"land_no": {"$regex": land.get(), "$options": "i"}},
+                                {"misc": {"$regex": misc.get(), "$options": "i"}}
+                            ]})
 
+
+            data = [doc for doc in cursor]
+            for doc in data:
+                values = [str(v) for v in doc.values()]
+            
+                
+            tab1.destroy()
+            patient_selected(values)
+        else:
+            messagebox.showerror("Error", "An error occurred!")
+            return
+        
+    tab1 = Toplevel(root)
+    mrdLabel = ttk.Label(tab1, text="MRD Number").grid(row=0, column=0)
+    mrd = StringVar()
+    mrdEntry = ttk.Entry(tab1, textvariable=mrd).grid(row=0, column=1)
+    import random
+    today = datetime.date.today()
+    new_day = today.day
+    mrd_str = str(new_day)+str(random.randint(100000, 999999))
+    mrd.set(mrd_str)
+    
+    
+    fnLabel = ttk.Label(tab1, text="First Name").grid(row=2, column=0)
+    fn = StringVar()
+    fnEntry = ttk.Entry(tab1, textvariable=fn).grid(row=2, column=1) 
+
+    mnLabel = ttk.Label(tab1, text="Middle Name").grid(row=4, column=0)
+    mn = StringVar()
+    mnEntry = ttk.Entry(tab1, textvariable=mn).grid(row=4, column=1) 
+
+    lnLabel = ttk.Label(tab1, text="Last Name").grid(row=6, column=0)
+    ln = StringVar()
+    lnEntry = ttk.Entry(tab1, textvariable=ln).grid(row=6, column=1) 
+
+    ageLabel = ttk.Label(tab1, text="Age").grid(row=8, column=0)
+    age = StringVar()
+    ageEntry = ttk.Entry(tab1, textvariable=age).grid(row=8, column=1) 
+
+    sexLabel = ttk.Label(tab1, text="Sex").grid(row=10, column=0)
+    sex = StringVar()
+    ttk.Radiobutton(tab1,variable=sex, text="Male",value="Male", command=None).grid(row=10, column=1)
+    ttk.Radiobutton(tab1,variable=sex, text="Female",value="Female", command=None).grid(row=10, column=2)
+
+    addressLabel = ttk.Label(tab1, text="Address").grid(row=12, column=0)
+    address = StringVar()
+    addressEntry = ttk.Entry(tab1, textvariable=address).grid(row=12, column=1) 
+
+    mobLabel = ttk.Label(tab1, text="Mobile Number").grid(row=14, column=0)
+    mob = StringVar()
+    mobEntry = ttk.Entry(tab1, textvariable=mob).grid(row=14, column=1) 
+
+    landLabel = ttk.Label(tab1, text="Landline Number").grid(row=16, column=0)
+    land = StringVar()
+    landEntry = ttk.Entry(tab1, textvariable=land).grid(row=16, column=1)
+
+
+    miscLabel = ttk.Label(tab1, text="Miscellaneous").grid(row=18, column=0)
+    misc = StringVar()
+    miscEntry = ttk.Entry(tab1, textvariable=misc).grid(row=18, column=1)
+
+    validateSubmit = partial(validateSubmit, mrd,fn,mn,ln,age,sex,address,mob,land,misc)
+    submitButton = ttk.Button(tab1, text="Submit", command=validateSubmit).grid(row=20, column=0)
+    
 
 class Patient():
     def __init__(self, mrd,fn,mn,ln,age,sex,address,mob,land,misc):
