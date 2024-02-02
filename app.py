@@ -1211,6 +1211,38 @@ def main_page():
 
         hist_button = ttk.Button(patient_detail_frame, text="Complete History", command=view_history)
         hist_button.grid(row = 13, column= 4, sticky=tk.S)
+
+        #Tab 2 IPD
+        
+        patient_info_ipd = ttk.LabelFrame(tab2, text = "Patient Information")
+        patient_info_ipd.grid(row = 1, column = 0)
+        patient_discharge_ipd = ttk.LabelFrame(tab2, text = "Discharge Summary")
+        patient_discharge_ipd.grid(row = 2, column = 0)
+        
+        ttk.Label(patient_discharge_ipd, text="Date of Admission", borderwidth=3, relief="ridge").grid(row = 1, column= 0)
+        ttk.Label(patient_discharge_ipd, text="Time", borderwidth=3, relief="ridge").grid(row = 1, column= 4)
+        ttk.Label(patient_discharge_ipd, text="Date of Discharge", borderwidth=3, relief="ridge").grid(row = 2, column= 0)
+        ttk.Label(patient_discharge_ipd, text="Time", borderwidth=3, relief="ridge").grid(row = 2, column= 4)
+        
+        doatxt = Entry(patient_discharge_ipd, width=10)
+        doatxt.grid(row=1, column=1)
+        
+        t1txt = Entry(patient_discharge_ipd, width=10)
+        t1txt.grid(row=1, column=5)
+        
+        
+        dodtxt = Entry(patient_discharge_ipd, width=10)
+        dodtxt.grid(row=2, column=1)
+        
+        t2txt = Entry(patient_discharge_ipd, width=10)
+        t2txt.grid(row=2, column=5)
+        
+        
+        ttk.Label(patient_info_ipd, text="Name: "+ name, borderwidth=3, relief="ridge").grid(row = 3, column= 0)
+        ttk.Label(patient_info_ipd, text="Age: " +str(doc[5]), borderwidth=3, relief="ridge").grid(row = 3, column= 1)
+        ttk.Label(patient_info_ipd, text="Sex: "+str(doc[6]), borderwidth=3, relief="ridge").grid(row = 3, column= 2)
+        ttk.Label(patient_info_ipd, text="Mob: "+str(doc[8]), borderwidth=3, relief="ridge").grid(row = 3, column= 3)
+        ttk.Label(patient_info_ipd, text="Date: "+today_string, borderwidth=3, relief="ridge").grid(row = 3, column= 4)        
             
 
 
