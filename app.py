@@ -518,6 +518,52 @@ def main_page():
         patient_detail_frame.grid(row = 4, column = 0)
 
 
+        def chief_complaints(event):
+            complaints = Toplevel(root)
+            complaints.geometry("500x500")
+            
+        
+
+
+        def history_event(event):
+            history = Toplevel(root)
+            history.geometry("500x500")
+        
+
+        ttk.Label(patient_detail_frame, text="COMPLAINTS").grid(row=3, column=0)
+        # This line creates a text widget named complaintxt within the patient_detail_frame. The text widget is configured to have a height of 10 lines, a width of 25 characters, and a light yellow background color.
+        complaintxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        # This line specifies the position of the complaintxt text widget within the patient_detail_frame using the grid geometry manager. It is placed in row 4 and column 0.
+        complaintxt.grid(row=4, column=0)
+        # This line inserts the string "Complaints" at the end (i.e., after any existing text) of the complaintxt text widget.
+        complaintxt.insert(END, "Complaints")
+
+        # This line binds the <Double-Button-1> event (double-click of the left mouse button) to the chief_complaints function when it occurs within the complaintxt text widget. The add="+" argument ensures that this binding does not replace any existing bindings for the same event.
+        complaintxt.bind("<Double-Button-1>", chief_complaints, add="+")
+        
+        
+        
+        
+
+
+        
+        
+        
+        ttk.Label(patient_detail_frame, text="HISTORY").grid(row=5, column=0)
+        historytxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        historytxt.grid(row=6, column=0)
+        
+        historytxt.insert(END, "History")
+
+        # CHANGE DONE HERE -- NACHIKET (history-->history_event)
+        historytxt.bind("<Double-Button-1>", history_event, add="+")
+
+
 
 
 
