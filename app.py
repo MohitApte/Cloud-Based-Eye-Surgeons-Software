@@ -237,6 +237,154 @@ def new_patient():
     validateSubmit = partial(validateSubmit, mrd,fn,mn,ln,age,sex,address,mob,land,misc)
     submitButton = ttk.Button(tab1, text="Submit", command=validateSubmit).grid(row=20, column=0)
     
+def old_patient():
+    
+    def validateSubmit(mrd,fn,mn,ln,age,sex,address,mob,land,misc):
+
+        
+            def on_tree_select(event):
+                # This line retrieves the ID of the selected item in the treeview widget that triggered the event.
+                item = event.widget.selection()[0]
+                # This line retrieves the values associated with the selected item in the treeview widget. It accesses the dictionary stored under the key 'values' within the dictionary returned by event.widget.item(item).
+                values = event.widget.item(item)['values']
+                #  This line destroys (closes) the tab2 frame. It assumes that tab2 is a Tkinter Frame object representing a tab in a notebook-style interface.
+                tab2.destroy()
+                # This line calls the patient_selected function and passes the values retrieved from the selected item as an argument. This function presumably takes some action based on the selected patient's information.
+                patient_selected(values)
+                
+
+
+            # This line retrieves the database named 'patient_data' from the MongoDB client (client) 
+            db = client.get_database('patient_data')
+
+            #  This line retrieves the collection named 'patient_name_age' from the db database. It assumes that 'patient_name_age' is a collection (similar to a table in relational databases) within the 'patient_data' database.
+            collection = db['patient_name_age']
+            
+            # this query retrieves documents from the MongoDB collection based on multiple conditions specified for different fields, and all conditions must be met for a document to be returned in the cursor.
+
+            cursor = collection.find({"$and": [
+                                {"MRD": {"$regex": mrd.get(), "$options": "i"}},   
+                                {"first_name": {"$regex": fn.get(), "$options": "i"}},
+                                {"middle_name": {"$regex": mn.get(), "$options": "i"}},
+                                {"last_name": {"$regex": ln.get(), "$options": "i"}},
+                                {"age": {"$regex": age.get(), "$options": "i"}},
+                                {"sex": {"$regex": sex.get()}},
+                                {"address": {"$regex": address.get(), "$options": "i"}},
+                                {"mobile_no": {"$regex": mob.get(), "$options": "i"}},
+                                {"land_no": {"$regex": land.get(), "$options": "i"}},
+                                {"misc": {"$regex": misc.get(), "$options": "i"}}
+                            ]})
+
+
+            # This line creates a list called data using a list comprehension. It iterates over the cursor object and adds each document (doc) returned by the cursor to the list.
+            data = [doc for doc in cursor]
+
+
+            # This line creates a new Tkinter Frame widget named tree_frame. The tree_frame is a child of the tab2 widget (which presumably represents a tab in a notebook-style interface)
+            tree_frame = ttk.Frame(tab2)
+            # This line uses the grid geometry manager to place the tree_frame widget within the tab2 widget. It specifies that the tree_frame should be placed in the fourth column and thirtieth row of the grid, and it should expand in both the horizontal and vertical directions (sticky='nsew'). This allows the tree_frame to fill the available space within the tab2 widget.
+            tree_frame.grid(column=4, row=30, sticky='nsew')
+    
+
+
+            # Create a tkinter window and Treeview widget to display the JSON data
+            style = ttk.Style()
+            style.configure("Custom.Treeview", rowheight=35)
+            
+
+            # This line creates a new Treeview widget named tree as a child of the tab2 widget. The columns parameter specifies the column names based on the keys of the first document in the data list. The show='headings' parameter specifies that only the column headings should be shown.
+            tree = ttk.Treeview(tab2, columns=list(data[0].keys()), show='headings')
+            
+            # This line applies the custom style "Custom.Treeview" to the Treeview widget created earlier.
+            tree.configure(style="Custom.Treeview")
+
+
+            # This loop iterates over the keys of the first document in the data list (assuming there is at least one document in the list) and sets each key as the text for the corresponding column heading in the Treeview widget.
+            for key in data[0].keys():
+                tree.heading(key, text=key)
+
+
+
+            # This loop iterates over each document in the data list. It converts the values of each document to strings and inserts them into the Treeview widget as a new row. It also checks if the value at index 1 (presumably representing the MRD) is not already in the mrd_data dictionary before inserting it.
+            mrd_data={}
+            for doc in data:
+                values = [str(v) for v in doc.values()]
+                if values[1] not in mrd_data:    
+                    mrd_data[values[1]] = 1
+                    tree.insert('', 'end', values=values)
+                    
+                    
+
+            #This line creates a vertical scrollbar named tree_scroll for the Treeview widget. 
+            tree_scroll = ttk.Scrollbar(tree_frame, orient='vertical', command=tree.yview)
+            # This line configures the yscrollcommand of the Treeview widget to be controlled by the tree_scroll scrollbar.
+            tree.configure(yscrollcommand=tree_scroll.set)
+            # This line uses the grid geometry manager to position the Treeview widget within the tree_frame widget, which is a child of tab2. The sticky='nsew' option makes the widget expand in all directions.
+            tree.grid(column=4, row=30, sticky='nsew')
+
+            # This line positions the scrollbar tree_scroll adjacent to the Treeview widget in the vertical direction (sticky='ns').
+            tree_scroll.grid(column=4, row=30, sticky='ns')
+
+            # Bind the treeview event to a function that will be called when a row is selected
+            tree.bind('<<TreeviewSelect>>', on_tree_select)
+       
+            
+
+        
+
+    
+    tab2 = Toplevel(root)
+    screen_width = tab2.winfo_screenwidth()
+    screen_height = tab2.winfo_screenheight()
+    tab2.geometry("%dx%d" % (screen_width, screen_height))
+    tab2.title("Old Patient")
+    mrdLabel = ttk.Label(tab2, text="MRD Number").grid(row=0, column=0)
+    mrd = StringVar()
+    mrdEntry = ttk.Entry(tab2, textvariable=mrd).grid(row=0, column=1)
+
+    fnLabel = ttk.Label(tab2, text="First Name").grid(row=2, column=0)
+    fn = StringVar()
+    fnEntry = ttk.Entry(tab2, textvariable=fn).grid(row=2, column=1) 
+
+    mnLabel = ttk.Label(tab2, text="Middle Name").grid(row=4, column=0)
+    mn = StringVar()
+    mnEntry = ttk.Entry(tab2, textvariable=mn).grid(row=4, column=1) 
+
+    lnLabel = ttk.Label(tab2, text="Last Name").grid(row=6, column=0)
+    ln = StringVar()
+    lnEntry = ttk.Entry(tab2, textvariable=ln).grid(row=6, column=1) 
+
+    ageLabel = ttk.Label(tab2, text="Age").grid(row=8, column=0)
+    age = StringVar()
+    ageEntry = ttk.Entry(tab2, textvariable=age).grid(row=8, column=1) 
+    
+    sexLabel = ttk.Label(tab2, text="Sex").grid(row=10, column=0)
+    sex = StringVar()
+    ttk.Radiobutton(tab2,variable=sex, text="Male",value="Male", command=None).grid(row=10, column=1)
+    ttk.Radiobutton(tab2,variable=sex, text="Female",value="Female", command=None).grid(row=10, column=2)
+
+    addressLabel = ttk.Label(tab2, text="Address").grid(row=12, column=0)
+    address = StringVar()
+    addressEntry = ttk.Entry(tab2, textvariable=address).grid(row=12, column=1) 
+
+    mobLabel = ttk.Label(tab2, text="Mobile Number").grid(row=14, column=0)
+    mob = StringVar()
+    mobEntry = ttk.Entry(tab2, textvariable=mob).grid(row=14, column=1) 
+
+    landLabel = ttk.Label(tab2, text="Landline Number").grid(row=16, column=0)
+    land = StringVar()
+    landEntry = ttk.Entry(tab2, textvariable=land).grid(row=16, column=1)
+
+
+    miscLabel = ttk.Label(tab2, text="Miscellaneous").grid(row=18, column=0)
+    misc = StringVar()
+    miscEntry = ttk.Entry(tab2, textvariable=misc).grid(row=18, column=1)
+
+    validateSubmit = partial(validateSubmit, mrd,fn,mn,ln,age,sex, address,mob,land,misc)
+    submitButton = ttk.Button(tab2, text="Search", command=validateSubmit).grid(row=20, column=0)
+
+   
+
 
 class Patient():
     def __init__(self, mrd,fn,mn,ln,age,sex,address,mob,land,misc):
