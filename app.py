@@ -563,7 +563,67 @@ def main_page():
         # CHANGE DONE HERE -- NACHIKET (history-->history_event)
         historytxt.bind("<Double-Button-1>", history_event, add="+")
 
+        def diagram(event):
+            diagram = Toplevel(root)
+            diagram.geometry("500x500")
+            global img_data
 
+            def select_image():
+                global img_data
+                filename = filedialog.askopenfilename(initialdir="/", title="Select Image", filetypes=(("Image files", "*.jpg *.jpeg *.png"), ("All files", "*.*")))
+                if filename:
+                    image = Image.open(filename)
+                    image.show()
+            
+                    # Store the image in MongoDB
+                    with open(filename, "rb") as f:
+                        img_data = f.read()
+                        #print(img_data)
+                    
+                    
+             
+                    
+            select_image()
+           
+
+                
+                
+            
+            
+            
+            
+        def diagnosis_event(event):
+            diagnosis = Toplevel(root)
+            diagnosis.geometry("500x500")
+            
+        
+        ttk.Label(patient_detail_frame, text="DIAGRAM").grid(row=5, column=1)
+        diagramtxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        diagramtxt.grid(row=6, column=1)
+        
+        diagramtxt.insert(END, "Diagram")
+        diagramtxt.bind("<Double-Button-1>", diagram, add="+")
+            
+        
+
+
+
+
+        ttk.Label(patient_detail_frame, text="DIAGNOSIS").grid(row=3, column=2)
+        diagnosistxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        diagnosistxt.grid(row=4, column=2)
+        
+        diagnosistxt.insert(END, "Diagnosis")
+        # CHANGE DONE - NACHIKET (diagnosis--> diagnosis_event)
+        diagnosistxt.bind("<Double-Button-1>", diagnosis_event, add="+")
+
+        
 
 
 
