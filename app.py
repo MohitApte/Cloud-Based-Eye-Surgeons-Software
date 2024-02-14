@@ -1246,6 +1246,92 @@ def main_page():
             
 
 
+        def view_ipd_history():
+            view_hist = Toplevel(root)
+            view_hist.geometry("1000x1000")
+            global cur_pat
+            
+            
+            def retrive_data(date):
+                db = client.get_database('patient_data')
+                collection = db['patient_name_age']
+                new_col = collection.find({"$and": [
+                                    {"first_name": {"$regex": str(cur_pat[2]), "$options": "i"}},
+                                    {"middle_name": {"$regex": str(cur_pat[3]), "$options": "i"}},
+                                    {"last_name": {"$regex": str(cur_pat[4]), "$options": "i"}},
+                                    {"date": {"$regex": str(date), "$options": "i"}}
+                                ]})
+                
+                
+                
+                for document in new_col:
+
+                    string = ""
+                    
+                    string += str(document['doatxt']) + "  "
+
+                    
+                    string += str(document['t1txt'])
+                    string+="\n\n"
+                    
+                    string += str(document['dodtxt']) + "  "
+
+                    
+                    string += str(document['t2txt'])
+                    string+="\n\n"
+                    
+                    
+                    string += str(document['cftxt'])
+                    string+="\n\n"
+                    string += str(document['opnotestxt'])
+                    string+="\n\n"
+                    string += str(document['investigationtxt'])
+                    string+="\n\n"
+                    string += str(document['postmedicinetxt'])
+                    string+="\n\n"
+                    string += str(document['surgeryadvisingtxt'])
+                    string+="\n\n"
+                    string += str(document['adviseondischargetxt'])
+                    string+="\n\n"
+                    
+                    output_path = "ipd.docx"
+
+                    doc = Document()
+                    doc.add_paragraph(string)
+                    
+                    
+                    doc.save(output_path)
+
+                    filename = "ipd.docx"
+                    
+                    if os.name == "posix":  # for macOS or Linux
+                        os.system("open " + filename)
+                    elif os.name == "nt":  # for Windows
+                        os.system("start " + filename)
+                
+
+                
+            db = client.get_database('patient_data')
+            collection = db['patient_name_age']
+            
+            cursor = collection.find({"$and": [
+                                {"first_name": {"$regex": str(cur_pat[2]), "$options": "i"}},
+                                {"middle_name": {"$regex": str(cur_pat[3]), "$options": "i"}},
+                                {"last_name": {"$regex": str(cur_pat[4]), "$options": "i"}},
+                            ]})
+            data = [doc for doc in cursor]
+            new_dict = {}
+            row = 0
+            
+            for doc in data:
+                values = [str(v) for v in doc.values()]
+                ttk.Button(view_hist, text=str(values[-1]), command=lambda date=values[-1]: retrive_data(date)).grid(row = row, column= 1, sticky=tk.S)
+                row += 1
+                
+        ipd_hist_button = ttk.Button(patient_detail_ipd, text="IPD History", command=view_ipd_history)
+        ipd_hist_button.grid(row = 13, column= 4, sticky=tk.S)     
+
+
 
 
 
