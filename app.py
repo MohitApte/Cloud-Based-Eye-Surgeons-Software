@@ -1212,6 +1212,164 @@ def main_page():
         hist_button = ttk.Button(patient_detail_frame, text="Complete History", command=view_history)
         hist_button.grid(row = 13, column= 4, sticky=tk.S)
 
+
+        def billing_section():
+            billing = Toplevel(root)
+            billing.attributes("-fullscreen", True)
+
+            screen_width = billing.winfo_screenwidth()
+            screen_height = billing.winfo_screenheight()
+
+            billing.geometry("%dx%d" % (screen_width, screen_height))
+
+            def calculate_amount():
+                try:
+                    unit = float(unit_entry.get())
+                    rate = float(rate_entry.get())
+                    discount = float(discount_entry.get() or 0)
+                    amount = unit * rate * (1 - discount / 100)
+                    total_amount_label.config(text=f"Total amount to be paid: {amount:.2f} Rs.")
+                except:
+                    #total_amount_label.config(text="Invalid input")
+                    messagebox.showerror("Error", "An error occurred!")
+                
+                
+            def convert_to_words(num):
+                if num == 0:
+                    return "zero"
+                
+                ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+                tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+                teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+                
+                words = ""
+                
+                # Handling lakhs
+                if num >= 100000:
+                    lakhs = num // 100000
+                    words += ones[lakhs] + " lakh "
+                    num %= 100000
+                
+                # Handling thousands
+                if num >= 1000:
+                    thousands = num // 1000
+                    words += convert_to_words(thousands) + " thousand "
+                    num %= 1000
+                
+                # Handling hundreds
+                if num >= 100:
+                    hundreds = num // 100
+                    words += ones[hundreds] + " hundred "
+                    num %= 100
+                    
+                # Handling tens and ones
+                if num >= 10 and num <= 19:
+                    words += teens[num - 10] + " "
+                    num = 0
+                elif num >= 20:
+                    tens_digit = num // 10
+                    words += tens[tens_digit] + " "
+                    num %= 10
+                    
+                if num >= 1 and num <= 9:
+                    words += ones[num] + " "
+                    
+                return words.strip()
+
+            def generate_pdf_bill(patient_info, billing_details, doctor_info, total_amount, department, billing_items):
+                c = canvas.Canvas("OPD_bill.pdf", pagesize=letter)
+
+                bold_font = "Helvetica-Bold"
+                normal_font = "Helvetica"
+                title_font_size = 15
+                section_font_size = 13
+                content_font_size = 12
+
+                text_x = 50
+                text_y = 720
+                line_height = 20
+
+                c.setFont(bold_font, title_font_size)
+                c.drawCentredString(300, 760, "EYE HOSPITAL, PUNE")
+                c.line(50, 740, 550, 740)
+
+                
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, "Patient Information:")
+                text_y -= line_height
+                for label, value in patient_info.items():
+                    c.setFont(normal_font, content_font_size)
+                    c.drawString(text_x, text_y, f"{label}: {value}")
+                    text_y -= line_height
+
+                text_y -= line_height
+
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, "Billing Details:")
+                text_y -= line_height
+                for label, value in billing_details.items():
+                    c.setFont(normal_font, content_font_size)
+                    c.drawString(text_x, text_y, f"{label}: {value}")
+                    text_y -= line_height
+
+                # Add spacing between sections
+                text_y -= line_height
+
+                # Draw doctor information
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, "Doctor Information:")
+                text_y -= line_height
+                for label, value in doctor_info.items():
+                    c.setFont(normal_font, content_font_size)
+                    c.drawString(text_x, text_y, f"{label}: {value}")
+                    text_y -= line_height
+
+                # Add spacing between sections
+                text_y -= line_height
+
+                # Draw department
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, f"Department: {department}")
+                text_y -= line_height
+
+                # Draw billing items in a tabular format
+                
+                text_y -= line_height
+
+                
+                
+                
+                
+               
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, f"Total Amount: Rs. {total_amount}")
+
+        
+                text_y -= line_height
+
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, "RECEIPT")
+                text_y -= line_height
+                c.setFont(normal_font, content_font_size)
+                c.drawString(text_x, text_y, f"Received the sum of Rs {total_amount}")
+                text_y -= line_height
+                amt = int(total_amount)
+                result = convert_to_words(amt)
+                c.drawString(text_x, text_y, f"In words : {result}")
+                text_y -= line_height
+                c.drawString(text_x, text_y, "By CASH / CARD / CHEQUE / UPI")
+
+                # Save the PDF
+                c.save()
+                filename = "OPD_bill.pdf"
+                
+                if os.name == "posix": 
+                    os.system("open " + filename)
+                elif os.name == "nt": 
+                    os.system("start " + filename)
+
+
+
         #Tab 2 IPD
         
         patient_info_ipd = ttk.LabelFrame(tab2, text = "Patient Information")
