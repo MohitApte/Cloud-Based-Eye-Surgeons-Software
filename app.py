@@ -623,7 +623,260 @@ def main_page():
         # CHANGE DONE - NACHIKET (diagnosis--> diagnosis_event)
         diagnosistxt.bind("<Double-Button-1>", diagnosis_event, add="+")
 
+
+        def exam(event):
+            exam = Toplevel(root)
+            exam.geometry("500x500")
+
+
+        ttk.Label(patient_detail_frame, text="EXAMINATION").grid(row=3, column=1)
+        examtxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
         
+        examtxt.grid(row=4, column=1)
+        
+        examtxt.insert(END, "Examination")
+        examtxt.bind("<Double-Button-1>", exam, add="+")
+
+
+
+        def advised_event(event):
+            advised = Toplevel(root)
+            advised.geometry("500x500")
+            
+        
+        
+            
+        
+            
+        def chief_medicine(event):
+            # This line creates a new top-level window (a pop-up window) and assigns it to the variable medicine. The Toplevel function is used to create a new window, and root (presumably the main application window) is passed as the parent window, indicating that medicine is a child window of root
+            medicine = Toplevel(root)
+            # his line sets an attribute of the medicine window to make it display in fullscreen mode. The attributes method is used to set various attributes of the window, and "-fullscreen" is the attribute specifying fullscreen mode. The value True indicates that fullscreen mode is enabled.
+            medicine.attributes("-fullscreen", True)
+
+            screen_width = medicine.winfo_screenwidth()
+            screen_height = medicine.winfo_screenheight()
+
+            medicine.geometry("%dx%d" % (screen_width, screen_height))
+            
+
+
+
+            patient_info_frame = ttk.LabelFrame(medicine, text = "Patient Information")
+            patient_info_frame.grid(row = 0, column = 0)
+            
+
+
+            medicine_frame = ttk.LabelFrame(medicine, text = "Medicine")
+            medicine_frame.grid(row = 2, column = 0)
+
+
+
+            ttk.Label(patient_info_frame, text="Name: "+ name, borderwidth=3, relief="ridge").grid(row = 9, column= 1)
+
+            ttk.Label(patient_info_frame, text="Age: " +str(doc[5]), borderwidth=3, relief="ridge").grid(row = 9, column= 2)
+
+            ttk.Label(patient_info_frame, text="Sex: "+str(doc[6]), borderwidth=3, relief="ridge").grid(row = 9, column= 3)
+
+            ttk.Label(patient_info_frame, text="Mob: "+str(doc[8]), borderwidth=3, relief="ridge").grid(row = 9, column= 4)
+
+            ttk.Label(patient_info_frame, text="Date: "+today_string+"             ", borderwidth=3, relief="ridge").grid(row = 9, column= 5)
+            
+            
+
+
+
+            ttk.Label(medicine_frame, text="Root Of Administration").grid(row = 1, column= 1)
+            ttk.Label(medicine_frame, text="Medicine Name").grid(row = 1, column= 5)
+            ttk.Label(medicine_frame, text="Type").grid(row = 1, column= 6)
+            ttk.Label(medicine_frame, text="Advice").grid(row = 1, column= 7)
+            ttk.Label(medicine_frame, text="Days").grid(row = 1, column= 8)
+            ttk.Label(medicine_frame, text="DWM").grid(row = 1, column= 9)
+            ttk.Label(medicine_frame, text="Qty").grid(row = 1, column= 10)
+            
+            
+            
+
+
+            global currow
+            currow = 1 
+            vari = {}
+            global x
+            global medname
+            global medtype
+            global medadvice
+            global days
+            global dwm
+            global qty
+            
+            
+            
+            def add_more():
+                global currow
+                currow+=1
+                
+                vari[str(currow)+"xtxt"] = ttk.Combobox(medicine_frame, values=["Right Eye", "Left Eye", "Both Eyes", "Oral", "IM", "IV"]) 
+                vari[str(currow)+"xtxt"].grid(row=currow, column=1)
+                
+                
+
+                
+                vari[str(currow)+"mednametxt"] = Entry(medicine_frame, width=20)
+                vari[str(currow)+"mednametxt"].grid(row=currow, column=5)
+                
+                
+                vari[str(currow)+"typetxt"] = Entry(medicine_frame, width=4)
+                vari[str(currow)+"typetxt"].grid(row=currow, column=6)
+                
+                vari[str(currow)+"medadvicetxt"] = Entry(medicine_frame, width=10)
+                vari[str(currow)+"medadvicetxt"].grid(row=currow, column=7)
+                
+                
+                vari[str(currow)+"daystxt"] = Entry(medicine_frame, width=4)
+                vari[str(currow)+"daystxt"].grid(row=currow, column=8)
+                
+                
+                vari[str(currow)+"dwmtxt"] = Entry(medicine_frame, width=2)
+                vari[str(currow)+"dwmtxt"].grid(row=currow, column=9)
+                
+                
+                vari[str(currow)+"qtytxt"] = Entry(medicine_frame, width=2)
+                vari[str(currow)+"qtytxt"].grid(row=currow, column=10)
+                
+                
+                try:    
+                    vari[str(currow)+"xtxt"].insert(END, x[currow-2])
+                    vari[str(currow)+"mednametxt"].insert(END, medname[currow-2])
+                    vari[str(currow)+"typetxt"].insert(END, medtype[currow-2])
+                    vari[str(currow)+"medadvicetxt"].insert(END, medadvice[currow-2])
+                    vari[str(currow)+"daystxt"].insert(END, days[currow-2])
+                    vari[str(currow)+"dwmtxt"].insert(END, dwm[currow-2])
+                    vari[str(currow)+"qtytxt"].insert(END, qty[currow-2])
+                except:
+                    pass
+     
+        
+                return
+            
+            
+            for i in range(len(x)):
+                add_more()
+            
+            
+            
+            def save():
+                x.clear()
+
+                medname.clear()
+                medtype.clear()
+                medadvice.clear()
+                days.clear()
+                dwm.clear()
+                qty.clear()
+                for i in range(currow-1):
+                    x.append(vari[str(i+2)+"xtxt"].get())
+                    medname.append(vari[str(i+2)+"mednametxt"].get())
+                    medtype.append(vari[str(i+2)+"typetxt"].get())
+                    medadvice.append(vari[str(i+2)+"medadvicetxt"].get())
+                    days.append(vari[str(i+2)+"daystxt"].get())
+                    dwm.append(vari[str(i+2)+"dwmtxt"].get())
+                    qty.append(vari[str(i+2)+"qtytxt"].get())
+                    
+                print(x)   
+                print(medname)
+            
+            
+
+
+            # inside the mediciene window , create a button new 
+            button = ttk.Button(medicine, text="New", command=add_more)
+            button.grid(row = 12, column= 2, sticky=tk.S)
+            
+            # button save 
+            button = ttk.Button(medicine, text="Save", command=save)
+            button.grid(row = 12, column= 3, sticky=tk.S)
+                
+            
+
+
+
+
+
+            def screenshot():
+                pdf = canvas.Canvas("medicine.pdf")
+                pdf.drawString(100, 800, name)
+                pdf.drawString(250, 800, str(doc[5]))
+                pdf.drawString(280, 800, str(doc[6]))
+                pdf.drawString(330, 800, today_string)
+                
+                row = 750
+                for i in range(currow - 1):
+                
+                    pdf.drawString(100, row, medname[i])
+                    pdf.drawString(170, row, medtype[i])
+                    pdf.drawString(270, row, medadvice[i])
+                    pdf.drawString(370, row, "in "+x[i])
+                    pdf.drawString(470, row, days[i]+" days")
+                    pdf.drawString(520, row, "("+qty[i]+")")
+                    
+                    
+                    pdf.drawString(100, row-30, "----------------------------------------------------------------------------------")
+                    row -= 100
+                pdf.save()
+                
+                filename = "medicine.pdf"
+                
+                if os.name == "posix":  # for macOS or Linux
+                    os.system("open " + filename)
+                elif os.name == "nt":  # for Windows
+                    os.system("start " + filename)
+            
+            def exit_window():
+                    medicine.destroy() 
+            
+            
+            exit_button = ttk.Button(medicine, text="Exit", command=exit_window)
+            exit_button.grid(row = 12, column= 5, sticky=tk.S)   
+                
+                
+            button = ttk.Button(medicine_frame, text="Print", command=screenshot)
+            button.grid(row = 12, column= 4, sticky=tk.S)
+            
+        ttk.Label(patient_detail_frame, text="ADVISED").grid(row=5, column=2)
+        advisedtxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        advisedtxt.grid(row=6, column=2)
+        
+        advisedtxt.insert(END, "Advised")
+        # change done nachiket (advised--> advised_event)
+        advisedtxt.bind("<Double-Button-1>", advised_event, add="+")
+        
+
+
+
+
+
+
+
+        
+        ttk.Label(patient_detail_frame, text="MEDICINE").grid(row=3, column=3)
+        medicinetxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        medicinetxt.grid(row=4, column=3)
+        
+        medicinetxt.insert(END, "Medicine")
+        medicinetxt.bind("<Double-Button-1>", chief_medicine, add="+")
+
+
+        
+
+
 
 
 
