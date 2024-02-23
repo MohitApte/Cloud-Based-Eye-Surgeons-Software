@@ -1331,7 +1331,26 @@ def main_page():
         ipd_hist_button = ttk.Button(patient_detail_ipd, text="IPD History", command=view_ipd_history)
         ipd_hist_button.grid(row = 13, column= 4, sticky=tk.S)     
 
-
+        
+        
+        def print_every():
+            pdf = canvas.Canvas("hello.pdf")
+            pdf.drawString(100, 800, name)
+            pdf.drawString(100, 700, complaintxt.get("1.0",'end-1c'))
+            pdf.drawString(100, 600, diagnosistxt.get("1.0",'end-1c'))
+            pdf.drawString(100, 500, examtxt.get("1.0",'end-1c'))
+            pdf.drawString(100, 400, medicinetxt.get("1.0",'end-1c'))
+            pdf.drawString(100, 300, advisedtxt.get("1.0",'end-1c'))
+            pdf.save()
+            
+            filename = "hello.pdf"
+            
+            if os.name == "posix":  # for macOS or Linux
+                os.system("open " + filename)
+            elif os.name == "nt":  # for Windows
+                os.system("start " + filename)
+        
+     
 
 
 
