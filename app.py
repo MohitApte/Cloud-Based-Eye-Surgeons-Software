@@ -1368,6 +1368,52 @@ def main_page():
                 elif os.name == "nt": 
                     os.system("start " + filename)
 
+            def print_receipt():
+                # Gather patient, billing, and doctor information
+                patient_info = {
+                    "Name": name,  # This seems incorrect, it should be the patient's name
+                    "Age": str(doc[5]),
+                    "Sex": str(doc[6]),
+                    "Mobile": str(doc[8]),
+                    "Date": today_string
+                }
+
+                billing_details = {
+                    "Billing Item": billing_item_entry.get(),  # Update to match the label in the GUI
+                    "Unit": unit_entry.get(),
+                    "Rate": rate_entry.get(),
+                    "Discount": discount_entry.get(),
+                    "Detail": detail_entry.get()
+                }
+
+                doctor_info = {
+                    "Doctor's Name": doctor_name_entry.get(),
+                    "Doctor's Degree": doctor_degree_entry.get()
+                }
+                
+                # Gather additional information
+                department = department_entry.get()
+                billing_items = {
+                        "name": billing_item_entry.get(),
+                        "unit": unit_entry.get(),
+                        "rate": rate_entry.get(),
+                        "discount": discount_entry.get(),
+                        "amount": "calculate amount here",  # You need to calculate this value
+                        "detail": detail_entry.get()
+                    }
+                
+
+                total_amount_text = total_amount_label.cget("text").split(":")[-1].strip().replace('Rs.', '').strip()
+                try:
+                    # Convert the extracted numeric part to a floating-point number
+                    total_amount_float = float(total_amount_text)
+
+                    # Convert the floating-point number to an integer (if needed) or use it directly
+                    total_amount = int(total_amount_float)   
+                except:
+                    messagebox.showerror("Error", "An error occurred!")
+                # Generate PDF receipt
+                generate_pdf_bill(patient_info, billing_details, doctor_info, total_amount, department, billing_items)
 
 
         #Tab 2 IPD
