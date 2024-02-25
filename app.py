@@ -874,7 +874,388 @@ def main_page():
         medicinetxt.bind("<Double-Button-1>", chief_medicine, add="+")
 
 
+            
+        def prescription(event):
+            prescription = Toplevel(root)
+            prescription.attributes("-fullscreen", True)
+            screen_width = prescription.winfo_screenwidth()
+            screen_height = prescription.winfo_screenheight()
+            prescription.geometry("%dx%d" % (screen_width, screen_height))
+
+            
+            def insertValue(value, text_field, num_win):
+                text_field.insert(END, value)
+                num_win.destroy()
+            
+            def nums(event, field_txt):
+                num_win = Toplevel(root)
+                num_win.geometry("700x700")
+                button1 = ttk.Button(num_win, text="0.75", command=lambda val=str(0.75): insertValue(val,field_txt,num_win))
+                button1.grid(row=0, column=0)
+                button2 = ttk.Button(num_win, text="0.1", command=lambda val=str(0.1): insertValue(val,field_txt,num_win))
+                button2.grid(row=0, column=1)
+                button3 = ttk.Button(num_win, text="0.2", command=lambda val=str(0.2): insertValue(val,field_txt,num_win))
+                button3.grid(row=0, column=2)
+                button4 = ttk.Button(num_win, text="0.25", command=lambda val=str(0.25): insertValue(val,field_txt,num_win))
+                button4.grid(row=0, column=3)
+                button5 = ttk.Button(num_win, text="0.3", command=lambda val=str(0.3): insertValue(val,field_txt,num_win))
+                button5.grid(row=0, column=4)
+                button6 = ttk.Button(num_win, text="0.35", command=lambda val=str(0.35): insertValue(val,field_txt,num_win))
+                button6.grid(row=0, column=5)
+                button7 = ttk.Button(num_win, text="0.4", command=lambda val=str(0.4): insertValue(val,field_txt,num_win))
+                button7.grid(row=1, column=0)
+                button8 = ttk.Button(num_win, text="0.45", command=lambda val=str(0.45): insertValue(val,field_txt,num_win))
+                button8.grid(row=1, column=1)
+                button9 = ttk.Button(num_win, text="0.5", command=lambda val=str(0.5): insertValue(val,field_txt,num_win))
+                button9.grid(row=1, column=2)
+                
+            patient_info_frame = ttk.LabelFrame(prescription, text = "Patient Information")
+            patient_info_frame.grid(row = 0, column = 0)
+            
+            glass_prescription_frame = ttk.LabelFrame(prescription, text = "Glass Prescription")
+            glass_prescription_frame.grid(row = 2, column = 0)
+            
+            
+            def exit():
+                prescription.destroy()
+            
+            
+            
+            exit_button = ttk.Button(prescription, text="Exit", command=exit)
+            exit_button.grid(row = 12, column= 5, sticky=tk.S)
+            
+            rds = document['rds']
+            rdc = document['rdc']
+            rda = document['rda']
+            rdv = document['rdv']
+            rcs = document['rcs']
+            rcc = document['rcc']
+            rca = document['rca']
+            rcv = document['rcv']
+            rns = document['rns']
+            rnc = document['rnc']
+            rna = document['rna']
+            rnv = document['rnv']
+            lds = document['lds']
+            ldc = document['ldc']
+            lda = document['lda']
+            ldv = document['ldv']
+            lcs = document['lcs']
+            lcc = document['lcc']
+            lca = document['lca']
+            lcv = document['lcv']
+            lns = document['lns']
+            lnc = document['lnc']
+            lna = document['lna']
+            lnv = document['lnv']
+            ipd = document['ipd']
+            entry1txt = document['entry1']
+            entry2txt = document['entry2']
+            entry3txt = document['entry3']
+            entry4txt = document['entry4']
+              
+            
+            ttk.Label(patient_info_frame, text="Name: "+ name, borderwidth=3, relief="ridge").grid(row = 9, column= 1)
+            ttk.Label(patient_info_frame, text="Age: " +str(doc[5]), borderwidth=3, relief="ridge").grid(row = 9, column= 2)
+            ttk.Label(patient_info_frame, text="Sex: "+str(doc[6]), borderwidth=3, relief="ridge").grid(row = 9, column= 3)
+            ttk.Label(patient_info_frame, text="Mob: "+str(doc[8]), borderwidth=3, relief="ridge").grid(row = 9, column= 4)
+            ttk.Label(patient_info_frame, text="Date: "+today_string+"             ", borderwidth=3, relief="ridge").grid(row = 9, column= 5)
+            
+            
+            
+            
+            
+            ttk.Label(glass_prescription_frame, text="Right Eye").grid(row = 0, column= 1,columnspan=4)    
+            ttk.Label(glass_prescription_frame, text="Left Eye").grid(row = 0, column= 5, columnspan=4)
+            
+            ttk.Label(glass_prescription_frame, text="Dist.").grid(row = 2, column= 0)
+            ttk.Label(glass_prescription_frame, text="Computer").grid(row = 3, column= 0)
+            ttk.Label(glass_prescription_frame, text="Near").grid(row = 4, column= 0)
+            
+            
+            ttk.Label(glass_prescription_frame, text="Spl.").grid(row = 1, column= 1)
+            ttk.Label(glass_prescription_frame, text="Cyl.").grid(row = 1, column= 2)
+            ttk.Label(glass_prescription_frame, text="Axis").grid(row = 1, column= 3)
+            ttk.Label(glass_prescription_frame, text="Vision").grid(row = 1, column= 4)
+            
+            ttk.Label(glass_prescription_frame, text="Spl.").grid(row = 1, column= 5)
+            ttk.Label(glass_prescription_frame, text="Cyl.").grid(row = 1, column= 6)
+            ttk.Label(glass_prescription_frame, text="Axis").grid(row = 1, column= 7)
+            ttk.Label(glass_prescription_frame, text="Vision").grid(row = 1, column= 8)
+            
+            
+            
+            rdstxt = Entry(glass_prescription_frame, width=5)
+            rdstxt.grid(row=2, column=1)
+            rdstxt.bind("<Double-Button-1>", lambda event: nums(event, rdstxt), add="+")
+
+            
+            rdctxt = Entry(glass_prescription_frame, width=5)
+            rdctxt.grid(row=2, column=2)
+            rdctxt.bind("<Double-Button-1>", lambda event: nums(event, rdctxt), add="+")
+            
+            rdatxt = Entry(glass_prescription_frame, width=5)
+            rdatxt.grid(row=2, column=3)
+            rdatxt.bind("<Double-Button-1>", lambda event: nums(event, rdatxt), add="+")
+            
+            rdvtxt = Entry(glass_prescription_frame, width=5)
+            rdvtxt.grid(row=2, column=4)
+            rdvtxt.bind("<Double-Button-1>", lambda event: nums(event, rdvtxt), add="+")
+            
+            rcstxt = Entry(glass_prescription_frame, width=5)
+            rcstxt.grid(row=3, column=1)
+            rcstxt.bind("<Double-Button-1>", lambda event: nums(event, rcstxt), add="+")
+            
+            
+            rcctxt = Entry(glass_prescription_frame, width=5)
+            rcctxt.grid(row=3, column=2)
+            rcctxt.bind("<Double-Button-1>", lambda event: nums(event, rcctxt), add="+")
+            
+            rcatxt = Entry(glass_prescription_frame, width=5)
+            rcatxt.grid(row=3, column=3)
+            rcatxt.bind("<Double-Button-1>", lambda event: nums(event, rcatxt), add="+")
+            
+            rcvtxt = Entry(glass_prescription_frame, width=5)
+            rcvtxt.grid(row=3, column=4)
+            rcvtxt.bind("<Double-Button-1>", lambda event: nums(event, rcvtxt), add="+")
+            
+            
+            rnstxt = Entry(glass_prescription_frame, width=5)
+            rnstxt.grid(row=4, column=1)
+            rnstxt.bind("<Double-Button-1>", lambda event: nums(event, rnstxt), add="+")
+            
+            rnctxt = Entry(glass_prescription_frame, width=5)
+            rnctxt.grid(row=4, column=2)
+            rnctxt.bind("<Double-Button-1>", lambda event: nums(event, rnctxt), add="+")
+            
+            rnatxt = Entry(glass_prescription_frame, width=5)
+            rnatxt.grid(row=4, column=3)
+            rnatxt.bind("<Double-Button-1>", lambda event: nums(event, rnatxt), add="+")
+            
+            rnvtxt = Entry(glass_prescription_frame, width=5)
+            rnvtxt.grid(row=4, column=4)
+            rnvtxt.bind("<Double-Button-1>", lambda event: nums(event, rnvtxt), add="+")
+            
+            
+            
+            ldstxt = Entry(glass_prescription_frame, width=5)
+            ldstxt.grid(row=2, column=5)
+            ldstxt.bind("<Double-Button-1>", lambda event: nums(event, ldstxt), add="+")
+            
+            ldctxt = Entry(glass_prescription_frame, width=5)
+            ldctxt.grid(row=2, column=6)
+            ldctxt.bind("<Double-Button-1>", lambda event: nums(event, ldctxt), add="+")
+            
+            ldatxt = Entry(glass_prescription_frame, width=5)
+            ldatxt.grid(row=2, column=7)
+            ldatxt.bind("<Double-Button-1>", lambda event: nums(event, ldatxt), add="+")
+            
+            ldvtxt = Entry(glass_prescription_frame, width=5)
+            ldvtxt.grid(row=2, column=8)
+            ldvtxt.bind("<Double-Button-1>", lambda event: nums(event, ldvtxt), add="+")
+            
+            
+            lcstxt = Entry(glass_prescription_frame, width=5)
+            lcstxt.grid(row=3, column=5)
+            lcstxt.bind("<Double-Button-1>", lambda event: nums(event, lcstxt), add="+")
+            
+            lcctxt = Entry(glass_prescription_frame, width=5)
+            lcctxt.grid(row=3, column=6)
+            lcctxt.bind("<Double-Button-1>", lambda event: nums(event, lcctxt), add="+")
+            
+            lcatxt = Entry(glass_prescription_frame, width=5)
+            lcatxt.grid(row=3, column=7)
+            lcatxt.bind("<Double-Button-1>", lambda event: nums(event, lcatxt), add="+")
+            
+            lcvtxt = Entry(glass_prescription_frame, width=5)
+            lcvtxt.grid(row=3, column=8)
+            lcvtxt.bind("<Double-Button-1>", lambda event: nums(event, lcvtxt), add="+")
+            
+            
+            lnstxt = Entry(glass_prescription_frame, width=5)
+            lnstxt.grid(row=4, column=5)
+            lnstxt.bind("<Double-Button-1>", lambda event: nums(event, lnstxt), add="+")
+            
+            lnctxt = Entry(glass_prescription_frame, width=5)
+            lnctxt.grid(row=4, column=6)
+            lnctxt.bind("<Double-Button-1>", lambda event: nums(event, lnctxt), add="+")
+            
+            lnatxt = Entry(glass_prescription_frame, width=5)
+            lnatxt.grid(row=4, column=7)
+            lnatxt.bind("<Double-Button-1>", lambda event: nums(event, lnatxt), add="+")
+            
+            lnvtxt = Entry(glass_prescription_frame, width=5)
+            lnvtxt.grid(row=4, column=8)
+            lnvtxt.bind("<Double-Button-1>", lambda event: nums(event, lnvtxt), add="+")
+            
+            
+            glass_details_frame = ttk.LabelFrame(prescription, text = "Glass Details")
+            glass_details_frame.grid(row = 5, column = 0)
+            
+            ttk.Label(glass_details_frame, text="IPD:").grid(row = 5, column= 0)
+            ipdtxt = Entry(glass_details_frame)
+            ipdtxt.grid(row=5, column=1)
+            ipdtxt.bind("<Double-Button-1>", lambda event: nums(event, ipdtxt), add="+")
+            
+            
+            ttk.Label(glass_details_frame, text="Purpose: ").grid(row = 7, column= 0)
+            global entry1
+            entry1 = ttk.Combobox(glass_details_frame, values=["Constant Use", "For Near Vision Only", "For Distant Vision Only"])
+            entry1.grid(row = 7, column= 1)
+            entry2 = ttk.Combobox(glass_details_frame, values=["White Glass", "Photo Grey", "High Index Glass", "Anti-Glare Coating", "Goggles"])
+            entry2.grid(row = 7, column= 2)
+            
+            
+            ttk.Label(glass_details_frame, text="Remark: ").grid(row = 8, column= 0)
+            entry3 = ttk.Combobox(glass_details_frame, values=["Kryptok Bifocal Glass", "Executive Bifocal Glass", "Progressive Glass"])
+            entry3.grid(row = 8, column= 1)
+            entry4 = ttk.Combobox(glass_details_frame, values=["Change Right Glass Only","Change Left Glass Only", "Change Both Glasses"])
+            entry4.grid(row = 8, column= 2)
+            
+            
+            rdstxt.insert(END, rds)
+            rdctxt.insert(END, rdc)
+            rdatxt.insert(END, rda)
+            rdvtxt.insert(END, rdv)
+            rcstxt.insert(END, rcs)
+            rcctxt.insert(END, rcc)
+            rcatxt.insert(END, rca)
+            rcvtxt.insert(END, rcv)
+            rnstxt.insert(END, rns)
+            rnctxt.insert(END, rnc)
+            rnatxt.insert(END, rna)
+            rnvtxt.insert(END, rnv)
+            ldstxt.insert(END, lds)
+            ldctxt.insert(END, ldc)
+            ldatxt.insert(END, lda)
+            ldvtxt.insert(END, ldv)
+            lcstxt.insert(END, lcs)
+            lcctxt.insert(END, lcc)
+            lcatxt.insert(END, lca)
+            lcvtxt.insert(END, lcv)
+            lnstxt.insert(END, lns)
+            lnctxt.insert(END, lnc)
+            lnatxt.insert(END, lna)
+            lnvtxt.insert(END, lnv)
+            ipdtxt.insert(END, ipd)
+            entry1.insert(END, entry1txt)
+            entry2.insert(END, entry2txt)
+            entry3.insert(END, entry3txt)
+            entry4.insert(END, entry4txt)
+                        
+            
+            
+            def save():
+                filter = {"$and": [
+                                    {"first_name": {"$regex": str(doc[2]), "$options": "i"}},
+                                    {"middle_name": {"$regex": str(doc[3]), "$options": "i"}},
+                                    {"last_name": {"$regex": str(doc[4]), "$options": "i"}},
+                                ]}
+
+
+                new_values = {'$set': {'rds': rdstxt.get(),
+                       'rdc': rdctxt.get(),
+                       'rda': rdatxt.get(),
+                       'rdv': rdvtxt.get(),
+                       'rcs': rcstxt.get(),
+                       'rcc': rcctxt.get(),
+                       'rca': rcatxt.get(),
+                       'rcv': rcvtxt.get(),
+                       'rns': rnstxt.get(),
+                       'rnc': rnctxt.get(),
+                       'rna': rnatxt.get(),
+                       'rnv': rnvtxt.get(),
+                       'lds': ldstxt.get(),
+                       'ldc': ldctxt.get(),
+                       'lda': ldatxt.get(),
+                       'ldv': ldvtxt.get(),
+                       'lcs': lcstxt.get(),
+                       'lcc': lcctxt.get(),
+                       'lca': lcatxt.get(),
+                       'lcv': lcvtxt.get(),
+                       'lns': lnstxt.get(),
+                       'lnc': lnctxt.get(),
+                       'lna': lnatxt.get(),
+                       'lnv': lnvtxt.get(),
+                       'ipd': ipdtxt.get(),
+                       'entry1': entry1.get(),
+                       'entry2': entry2.get(),
+                       'entry3': entry3.get(),
+                       'entry4': entry4.get()}}
+
+
+                result = collection.update_one(filter, new_values)
+            
+            
+            button = ttk.Button(prescription, text="              Save", command=save)
+            button.grid(row = 12, column= 4, sticky=tk.S)
+            
+            
+            
+            
+            
+            def screenshot():
+                filename = "screenshot.png"
+                ss = pg.screenshot(filename)
+                
+                
+                # Crop the image using the calculated dimensions
+                cropped_image = ss.crop((0, 0, 750, 500))
+                cropped_image.save('cropped_screenshot.png')
+                
+                file_path = "cropped_screenshot.png"
+                win32api.ShellExecute(
+                    0,
+                    "print",
+                    file_path,
+                    f'/d:"{win32print.GetDefaultPrinter()}"',
+                    os.path.dirname(file_path),
+                    0
+                )
+            
+
+                
+                
+                
+            button = ttk.Button(prescription, text="              Print", command=screenshot)
+            button.grid(row = 12, column= 3, sticky=tk.S)
+            
+        complaints = document['complaints']
+        examination = document['examination']
+        diagnosis = document['diagnosis']
+        medicine = document['medicine']
+        history = document['history']
+        advised = document['advised'] 
+
+
+        ttk.Label(patient_detail_frame, text="PRESCRIPTION").grid(row=5, column=3)
+        prescriptiontxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
         
+        prescriptiontxt.grid(row=6, column=3)
+        
+        prescriptiontxt.insert(END, "Prescription:")
+        prescriptiontxt.bind("<Double-Button-1>", prescription, add="+")
+
+
+
+
+        hist_button = ttk.Button(patient_detail_frame, text="Complete History", command=view_history)
+        hist_button.grid(row = 13, column= 4, sticky=tk.S)
+            
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
