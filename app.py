@@ -1415,6 +1415,144 @@ def main_page():
                 # Generate PDF receipt
                 generate_pdf_bill(patient_info, billing_details, doctor_info, total_amount, department, billing_items)
 
+            
+            
+            patient_info_frame = ttk.LabelFrame(billing, text="Patient Information")
+            patient_info_frame.grid(row=0, column=0, padx=50, pady=20, sticky="nsew")  
+
+            ttk.Label(patient_info_frame, text="Bill No: ").grid(row=0, column=0, sticky="w")
+            bill_no_entry = ttk.Entry(patient_info_frame)
+            bill_no_entry.grid(row=0, column=0, sticky="e")
+
+
+            
+            
+            ttk.Label(patient_info_frame, text="Name of Patient: " + name).grid(row=1, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Age: " + str(doc[5])).grid(row=2, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Sex: " + str(doc[6])).grid(row=3, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Mobile Number: " + str(doc[8])).grid(row=4, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Date: " + today_string).grid(row=5, column=0, sticky="w")
+
+
+
+
+
+
+
+            
+            billing_details_frame = ttk.LabelFrame(billing, text="Billing Details")
+            billing_details_frame.grid(row=1, column=0, padx=50, pady=20, sticky="nsew") 
+
+            
+
+
+        
+            
+            department_label = ttk.Label(billing_details_frame, text="Department: ")
+            department_label.grid(row=0, column=0, sticky="e")
+
+            department_entry = ttk.Combobox(billing_details_frame, values=["OPD", "IPD"])
+            department_entry.grid(row=0, column=1, sticky="w")
+
+
+
+            
+            billing_item_label = ttk.Label(billing_details_frame, text="Billing Item: ")
+            billing_item_label.grid(row=1, column=0, sticky="e")
+            billing_item_entry = ttk.Entry(billing_details_frame)
+            billing_item_entry.grid(row=1, column=1, sticky="w")
+
+            
+            unit_label = ttk.Label(billing_details_frame, text="Unit: ")
+            unit_label.grid(row=2, column=0, sticky="e")
+            unit_entry = ttk.Entry(billing_details_frame)
+            unit_entry.grid(row=2, column=1, sticky="w")
+
+            
+            rate_label = ttk.Label(billing_details_frame, text="Rate: ")
+            rate_label.grid(row=3, column=0, sticky="e")
+            rate_entry = ttk.Entry(billing_details_frame)
+            rate_entry.grid(row=3, column=1, sticky="w")
+
+           
+            discount_label = ttk.Label(billing_details_frame, text="Discount: ")
+            discount_label.grid(row=4, column=0, sticky="e")
+            discount_entry = ttk.Entry(billing_details_frame)
+            discount_entry.grid(row=4, column=1, sticky="w")
+
+
+            
+
+
+
+            
+            detail_label = ttk.Label(billing_details_frame, text="Detail: ")
+            detail_label.grid(row=6, column=0, sticky="e")
+            detail_entry = ttk.Entry(billing_details_frame)
+            detail_entry.grid(row=6, column=1, sticky="w")
+
+            
+            total_amount_label = ttk.Label(billing_details_frame, text="Total amount to be paid: ")
+            total_amount_label.grid(row=5, column=0, sticky="e")
+
+            calculate_amount_button = ttk.Button(billing_details_frame, text="Calculate Amount", command=calculate_amount)
+            calculate_amount_button.grid(row=7, columnspan=2, pady=10)
+
+            
+            
+
+            ttk.Button(billing, text="Print Receipt", command=print_receipt).grid(row=4, column=0, padx=50, pady=10, sticky="nsew")
+
+            ttk.Button(billing, text="Exit Billing Section", command=billing.destroy).grid(row=5, column=0, padx=50, pady=10, sticky="nsew")
+
+            
+
+
+
+
+            doctor_details_frame = ttk.LabelFrame(billing, text="Doctor Details")
+            doctor_details_frame.grid(row=0, column=1, padx=50, pady=20, sticky="nsew")
+
+
+
+            
+            doctor_name_label = ttk.Label(doctor_details_frame, text="Doctor's Name: ")
+            doctor_name_label.grid(row=0, column=0, sticky="e")
+            doctor_name_entry = ttk.Combobox(doctor_details_frame, values=["Dr. Salim Pathan"])
+            doctor_name_entry.grid(row=0, column=1, sticky="w")
+
+
+            doctor_degree_label = ttk.Label(doctor_details_frame, text="Doctor's Degree: ")
+            doctor_degree_label.grid(row=1, column=0, sticky="e")
+            doctor_degree_entry = ttk.Combobox(doctor_details_frame, values=["MBBS", "MS", "MD"])
+            doctor_degree_entry.grid(row=1, column=1, sticky="w")
+
+
+       
+
+
+
+            
+        billing_button=ttk.Button(patient_detail_frame,text="Billing",command=billing_section)
+        # billing section func to be implemented
+        billing_button.grid(row=13 , column= 3,sticky=tk.S)
+
+
+
+
+
+
+
+
+
 
         #Tab 2 IPD
         
