@@ -1350,7 +1350,18 @@ def main_page():
             elif os.name == "nt":  # for Windows
                 os.system("start " + filename)
         
-     
+        patient_detail_ipd = ttk.LabelFrame(tab2, text = "Patient Details IPD")
+        patient_detail_ipd.grid(row = 4, column = 0)
+        
+        
+        ttk.Label(patient_detail_ipd, text="Clinical Findings").grid(row=3, column=0)
+        cftxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        cftxt.grid(row=4, column=0)
+        
+        cftxt.insert(END, "Clinical Findings")     
 
 
 
