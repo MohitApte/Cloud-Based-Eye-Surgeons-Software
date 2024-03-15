@@ -1363,6 +1363,25 @@ def main_page():
         
         cftxt.insert(END, "Clinical Findings")     
 
+        ttk.Label(patient_detail_ipd, text="Operation Notes").grid(row=5, column=0)
+        opnotestxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        opnotestxt.grid(row=6, column=0)
+        
+        opnotestxt.insert(END, "Operation Notes")
+        
+        
+        
+        ttk.Label(patient_detail_ipd, text="Invesitgation").grid(row=3, column=1)
+        investigationtxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        investigationtxt.grid(row=4, column=1)
+        
+        investigationtxt.insert(END, "Invesitgation")
 
 
 root = Tk()
