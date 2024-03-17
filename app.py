@@ -1383,7 +1383,38 @@ def main_page():
         
         investigationtxt.insert(END, "Invesitgation")
 
+        ttk.Label(patient_detail_ipd, text="Post Operative Medicines").grid(row=5, column=1)
+        postmedicinetxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        postmedicinetxt.grid(row=6, column=1)
+        
+        postmedicinetxt.insert(END, "Post Operative Medicines")
 
+        
+
+        ttk.Label(patient_detail_ipd, text="Surgery Advising").grid(row=3, column=2)
+        surgeryadvisingtxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        surgeryadvisingtxt.grid(row=4, column=2)
+        
+        surgeryadvisingtxt.insert(END, "Surgery Advising")
+        
+        ttk.Label(patient_detail_ipd, text="Advice on Discharge").grid(row=5, column=2)
+        adviseondischargetxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        adviseondischargetxt.grid(row=6, column=2)
+        
+        adviseondischargetxt.insert(END, "Advice on Discharge")
+        
+        ipd_button = ttk.Button(patient_detail_ipd, text="Save", command=new_save)
+        ipd_button.grid(row = 12, column= 4, sticky=tk.S)
+        
 root = Tk()
 root.geometry("400x150")
 root.title("Ophthalmic Software")
