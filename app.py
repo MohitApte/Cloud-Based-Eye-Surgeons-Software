@@ -534,7 +534,6 @@ def main_page():
         
         historytxt.insert(END, "History")
 
-        # CHANGE DONE HERE -- NACHIKET (history-->history_event)
         historytxt.bind("<Double-Button-1>", history_event, add="+")
 
         def diagram(event):
@@ -589,7 +588,6 @@ def main_page():
         diagnosistxt.grid(row=4, column=2)
         
         diagnosistxt.insert(END, "Diagnosis")
-        # CHANGE DONE - NACHIKET (diagnosis--> diagnosis_event)
         diagnosistxt.bind("<Double-Button-1>", diagnosis_event, add="+")
 
 
@@ -820,7 +818,6 @@ def main_page():
         advisedtxt.grid(row=6, column=2)
         
         advisedtxt.insert(END, "Advised")
-        # change done nachiket (advised--> advised_event)
         advisedtxt.bind("<Double-Button-1>", advised_event, add="+")
         
 
@@ -1673,7 +1670,458 @@ def main_page():
         ipd_hist_button = ttk.Button(patient_detail_ipd, text="IPD History", command=view_ipd_history)
         ipd_hist_button.grid(row = 13, column= 4, sticky=tk.S)     
 
+        def ipd_billing_section():
+            billing = Toplevel(root)
+            billing.attributes("-fullscreen", True)
+
+            screen_width = billing.winfo_screenwidth()
+            screen_height = billing.winfo_screenheight()
+
+            billing.geometry("%dx%d" % (screen_width, screen_height))
+
+            def calculate_amount():
+                try:
+                    operative_fees = float(operative_fees_entry.get())
+                    lens_implant = float(lens_implant_entry.get())
+                    operation_theatre_charges = float(operation_theatre_charges_entry.get())
+                    anaesthetist_fees = float(anaesthetist_fees_entry.get())
+                    viscoelastic = float(viscoelastic_entry.get())
+                    room_charge = float(room_charge_entry.get())
+                    
+                    medicines_charges = float(medicines_charges_entry.get())
+                    dressing_charges = float(dressing_charges_entry.get())
+                    phoco_machine_charges = float(phoco_machine_charges_entry.get())
+                    miscellaneous_charges = float(miscellaneous_charges_entry.get())
+                    
+                    
+                    total_amount = (operative_fees + lens_implant + operation_theatre_charges + 
+                                    anaesthetist_fees + viscoelastic + room_charge + medicines_charges + dressing_charges + 
+                                    phoco_machine_charges + miscellaneous_charges)
+                    
+                    
+                    total_amount_label.config(text=f"Total amount to be paid: {total_amount:.2f} Rs.")
+                except ValueError:
+                    
+                    total_amount_label.config(text="Invalid input")
+
+                
+                
+
+            def convert_to_words(num):
+                if num == 0:
+                    return "zero"
+                
+                ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
+                tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+                teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+                
+                words = ""
+                
+                # Handling lakhs
+                if num >= 100000:
+                    lakhs = num // 100000
+                    words += ones[lakhs] + " lakh "
+                    num %= 100000
+                
+                # Handling thousands
+                if num >= 1000:
+                    thousands = num // 1000
+                    words += convert_to_words(thousands) + " thousand "
+                    num %= 1000
+                
+                # Handling hundreds
+                if num >= 100:
+                    hundreds = num // 100
+                    words += ones[hundreds] + " hundred "
+                    num %= 100
+                    
+                # Handling tens and ones
+                if num >= 10 and num <= 19:
+                    words += teens[num - 10] + " "
+                    num = 0
+                elif num >= 20:
+                    tens_digit = num // 10
+                    words += tens[tens_digit] + " "
+                    num %= 10
+                    
+                if num >= 1 and num <= 9:
+                    words += ones[num] + " "
+                    
+                return words.strip()
+
+
+
+
+
+            def generate_pdf_bill(patient_info, billing_details, doctor_info, total_amount, department, billing_items,adm_date,dis_date):
+                c = canvas.Canvas("IPD_bill.pdf", pagesize=letter)
+                
+            
+                bold_font = "Helvetica-Bold"
+                normal_font = "Helvetica"
+                title_font_size = 15
+                section_font_size = 13
+                content_font_size = 11
+                
+                
+                c.setFont(bold_font, title_font_size)
+                c.drawCentredString(300, 765, "EYE HOSPITAL, PUNE")
+                
+                # x1,y1,x2,y2
+                c.line(50, 750, 550, 750)
+                
+                
+                text_x = 50
+                text_y = 720  
+                
+                line_height = 20
+                
+                
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, "Patient Information:")
+                text_y -= line_height
+                text_y = text_y-10
+
+                for label, value in patient_info.items():
+                    c.setFont(normal_font, content_font_size)
+                    c.drawString(text_x, text_y, f"{label}:")
+                    c.drawRightString(250, text_y, str(value))  # Aligning value to the right
+                    text_y -= line_height
+                
+                text_y -= line_height  
+                
+            
+                
+                c.setFont(bold_font, section_font_size)
+                c.drawString(350, 720, "Doctor's Information:")
+                new_y=690
+                for label, value in doctor_info.items():
+                    c.setFont(normal_font, content_font_size)
+                    c.drawString(350, new_y, f"{label}:")
+                    c.drawRightString(560, new_y, str(value))  
+                    new_y -= line_height
+                
+                
+                
+                new_y=new_y-10
+                c.setFont(bold_font, section_font_size)
+                c.drawString(350, new_y, "Department:")
+                c.setFont(normal_font, content_font_size)
+                c.drawString(540, new_y, department)  
+                new_y=new_y-20
+                c.drawString(350,new_y,f"Date Of Admission: {adm_date}")
+                new_y=new_y-20
+                c.drawString(350,new_y,f"Date Of Discharge: {dis_date}")    
+                
+                c.line(50, text_y+15, 550, text_y+15)
+                text_y -= line_height
+                
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, "Billing Items:")
+                text_y -= line_height
+
+                for key, value in billing_items.items():
+                    c.setFont(normal_font, content_font_size)
+                    c.drawString(text_x, text_y, f"{key}:")
+                    c.drawRightString(250, text_y, str(value))  
+                    text_y -= line_height
+                        
+                
+                text_y -= line_height 
+                
+                
+                c.setFont(bold_font, section_font_size)
+                c.drawString(text_x, text_y, "Total Amount:")
+                c.setFont(normal_font, content_font_size)
+                c.drawRightString(250, text_y, f"Rs. {total_amount}")  
+
+                c.setFont(bold_font, section_font_size)
+                text_y -= line_height 
+                c.line(50, text_y, 550, text_y)
+                text_y -= line_height 
+                text_y -= line_height
+                c.drawString(text_x, text_y, "RECEIPT")
+                text_y -= line_height
+                c.setFont(normal_font, content_font_size)
+
+                c.drawString(text_x, text_y,f"Received the sum of Rs {total_amount}")
+                text_y=text_y-20
+
+                amt=int(total_amount)
+                result=convert_to_words(amt)
+
+                c.drawString(text_x,text_y,f"In words : {result}")
+                text_y=text_y-20
+                c.drawString(text_x,text_y,"By CASH / CARD / CHEQUE / UPI")
+
+                text_y=text_y-50
+                c.setFont(bold_font,section_font_size)
+                c.drawString(text_x+400,text_y,"Name of Doctor")
+                c.setFont(normal_font,content_font_size)
+                text_y=text_y-20
+                c.drawString(text_x+430,text_y,"Degree")
+            
+                c.save()
+                filename = "IPD_bill.pdf"
+                
+                if os.name == "posix": 
+                    os.system("open " + filename)
+                elif os.name == "nt": 
+                    os.system("start " + filename)
+
+
+
+
+
+            
+            
+
+
+            def print_receipt():
+                
+                patient_info = {
+                    "Name": name,
+                    "Age": str(doc[5]),
+                    "Sex": str(doc[6]),
+                    "Mobile": str(doc[8]),
+                    "Date": today_string
+                }
+                adm_date=admission_date_entry.get()
+                dis_date=discharge_date_entry.get()
+
+
+
+                
+                billing_items = {
+                    "Diagnosis": diagnosis_entry.get(),
+                    "Operative Procedure": operative_procedure_entry.get(),
+                    "Operative Fees": operative_fees_entry.get(),
+                    "Lens Implant": lens_implant_entry.get(),
+                    "Operation Theatre Charges": operation_theatre_charges_entry.get(),
+                    "Anaesthetist Fees": anaesthetist_fees_entry.get(),
+                    "Viscoelastic": viscoelastic_entry.get(),
+                    "Room charge": room_charge_entry.get(),
+                    "Medicines charges": medicines_charges_entry.get(),
+                    "Dressing charges": dressing_charges_entry.get(),
+                    "Phoco Machine charges": phoco_machine_charges_entry.get(),
+                    "Other Miscellaneous charges": miscellaneous_charges_entry.get()
+                }
+
+                
+                doctor_info = {
+                    "Doctor's Name": doctor_name_entry.get(),
+                    "Doctor's Degree": doctor_degree_entry.get()
+                }
+
+                
+                department = department_entry.get()
+
+                
+                # Extract only the numeric part of the string and remove any non-numeric characters
+                total_amount_text = total_amount_label.cget("text").split(":")[-1].strip().replace('Rs.', '').strip()
+
+                # Convert the extracted numeric part to a floating-point number
+                total_amount_float = float(total_amount_text)
+
+                # Convert the floating-point number to an integer (if needed) or use it directly
+                total_amount = int(total_amount_float)  # Convert to integer if necessary
+
+
+
+
+                
+                generate_pdf_bill(patient_info, {}, doctor_info, total_amount, department,billing_items,adm_date,dis_date)
+
+
+
+            
+            
+            
+            
+            
+            
+            patient_info_frame = ttk.LabelFrame(billing, text="Patient Information")
+            patient_info_frame.grid(row=0, column=0, padx=50, pady=20, sticky="nsew")  
+
+            ttk.Label(patient_info_frame, text="Bill No: ").grid(row=0, column=0, sticky="w")
+            bill_no_entry = ttk.Entry(patient_info_frame)
+            bill_no_entry.grid(row=0, column=0, sticky="e")
+
+
+            
+            
+            ttk.Label(patient_info_frame, text="Name of Patient: " + name).grid(row=1, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Age: " + str(doc[5])).grid(row=2, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Sex: " + str(doc[6])).grid(row=3, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Mobile Number: " + str(doc[8])).grid(row=4, column=0, sticky="w")
+
+            
+            ttk.Label(patient_info_frame, text="Date: " + today_string).grid(row=5, column=0, sticky="w")
+
+            department_label = ttk.Label(patient_info_frame, text="Department: ")
+            department_label.grid(row=6, column=0, sticky="w")
+
+            department_entry = ttk.Combobox(patient_info_frame, values=["OPD", "IPD"])
+            department_entry.grid(row=6, column=1, sticky="w")
+
+            
+            admission_date_label = ttk.Label(patient_info_frame, text="Date of Admission: ")
+            admission_date_label.grid(row=7, column=0, sticky="w")
+            admission_date_entry = ttk.Entry(patient_info_frame)
+            admission_date_entry.grid(row=7, column=1, sticky="w")
+
+            admission_time_label = ttk.Label(patient_info_frame, text="Time of Admission: ")
+            admission_time_label.grid(row=8, column=0, sticky="w")
+            admission_time_entry = ttk.Entry(patient_info_frame)
+            admission_time_entry.grid(row=8, column=1, sticky="w")
+
+            discharge_date_label = ttk.Label(patient_info_frame, text="Date of Discharge: ")
+            discharge_date_label.grid(row=9, column=0, sticky="w")
+            discharge_date_entry = ttk.Entry(patient_info_frame)
+            discharge_date_entry.grid(row=9, column=1, sticky="w")
+
+            discharge_time_label = ttk.Label(patient_info_frame, text="Time of Discharge: ")
+            discharge_time_label.grid(row=10, column=0, sticky="w")
+            discharge_time_entry = ttk.Entry(patient_info_frame)
+            discharge_time_entry.grid(row=10, column=1, sticky="w")
+
+
+
+
+
+
+
+            
+            billing_details_frame = ttk.LabelFrame(billing, text="Billing Details")
+            billing_details_frame.grid(row=1, column=0, padx=50, pady=20, sticky="nsew") 
+
+            
+
+            diagnosis_label = ttk.Label(billing_details_frame, text="Diagnosis: ")
+            diagnosis_label.grid(row=0, column=0, sticky="e")
+
+            diagnosis_entry = ttk.Entry(billing_details_frame)
+            diagnosis_entry.grid(row=0, column=1, sticky="w")
+
+            operative_procedure_label = ttk.Label(billing_details_frame, text="Operative Procedure: ")
+            operative_procedure_label.grid(row=1, column=0, sticky="e")
+            operative_procedure_entry = ttk.Entry(billing_details_frame)
+            operative_procedure_entry.grid(row=1, column=1, sticky="w")
+
+            operative_fees_label = ttk.Label(billing_details_frame, text="Operative Fees: ")
+            operative_fees_label.grid(row=2, column=0, sticky="e")
+            operative_fees_entry = ttk.Entry(billing_details_frame)
+            operative_fees_entry.grid(row=2, column=1, sticky="w")
+
+            lens_implant_label = ttk.Label(billing_details_frame, text="Lens Implant: ")
+            lens_implant_label.grid(row=3, column=0, sticky="e")
+            lens_implant_entry = ttk.Entry(billing_details_frame)
+            lens_implant_entry.grid(row=3, column=1, sticky="w")
+
+            operation_theatre_charges_label = ttk.Label(billing_details_frame, text="Operation Theatre Charges: ")
+            operation_theatre_charges_label.grid(row=4, column=0, sticky="e")
+            operation_theatre_charges_entry = ttk.Entry(billing_details_frame)
+            operation_theatre_charges_entry.grid(row=4, column=1, sticky="w")
+
+            anaesthetist_fees_label = ttk.Label(billing_details_frame, text="Anaesthetist Fees: ")
+            anaesthetist_fees_label.grid(row=5, column=0, sticky="e")
+            anaesthetist_fees_entry = ttk.Entry(billing_details_frame)
+            anaesthetist_fees_entry.grid(row=5, column=1, sticky="w")
+
+            viscoelastic_label = ttk.Label(billing_details_frame, text="Viscoelastic: ")
+            viscoelastic_label.grid(row=6, column=0, sticky="e")
+            viscoelastic_entry = ttk.Entry(billing_details_frame)
+            viscoelastic_entry.grid(row=6, column=1, sticky="w")
+
+            room_charge_label = ttk.Label(billing_details_frame, text="Room Charge: ")
+            room_charge_label.grid(row=7, column=0, sticky="e")
+            room_charge_entry = ttk.Entry(billing_details_frame)
+            room_charge_entry.grid(row=7, column=1, sticky="w")
+
+
+            medicines_charges_label = ttk.Label(billing_details_frame, text="Injt + Medicines Charges: ")
+            medicines_charges_label.grid(row=8, column=0, sticky="e")
+            medicines_charges_entry = ttk.Entry(billing_details_frame)
+            medicines_charges_entry.grid(row=8, column=1, sticky="w")
+
+            dressing_charges_label = ttk.Label(billing_details_frame, text="Dressing Charges: ")
+            dressing_charges_label.grid(row=9, column=0, sticky="e")
+            dressing_charges_entry = ttk.Entry(billing_details_frame)
+            dressing_charges_entry.grid(row=9, column=1, sticky="w")
+
+            phoco_machine_charges_label = ttk.Label(billing_details_frame, text="Phoco Machine Charges: ")
+            phoco_machine_charges_label.grid(row=10, column=0, sticky="e")
+            phoco_machine_charges_entry = ttk.Entry(billing_details_frame)
+            phoco_machine_charges_entry.grid(row=10, column=1, sticky="w")
+
+            miscellaneous_charges_label = ttk.Label(billing_details_frame, text="Other Miscellaneous Charges: ")
+            miscellaneous_charges_label.grid(row=11, column=0, sticky="e")
+            miscellaneous_charges_entry = ttk.Entry(billing_details_frame)
+            miscellaneous_charges_entry.grid(row=11, column=1, sticky="w")
+
+
+
+
+
+            
+            total_amount_label = ttk.Label(billing_details_frame, text="Total amount to be paid: ")
+            total_amount_label.grid(row=12, column=0, sticky="e")
+
+            calculate_amount_button = ttk.Button(billing_details_frame, text="Calculate Amount", command=calculate_amount)
+            calculate_amount_button.grid(row=13, columnspan=2, pady=10)
+
+            
+            
+
+            ttk.Button(billing, text="Print Receipt", command=print_receipt).grid(row=4, column=0, padx=50, pady=10, sticky="nsew")
+
+            ttk.Button(billing, text="Exit Billing Section", command=billing.destroy).grid(row=5, column=0, padx=50, pady=10, sticky="nsew")
+
+            
+
+
+
+            doctor_details_frame = ttk.LabelFrame(billing, text="Doctor Details")
+            doctor_details_frame.grid(row=0, column=1, padx=50, pady=20, sticky="nsew")
+
+
+
+            
+            doctor_name_label = ttk.Label(doctor_details_frame, text="Doctor's Name: ")
+            doctor_name_label.grid(row=0, column=0, sticky="e")
+            doctor_name_entry = ttk.Combobox(doctor_details_frame, values=["Dr. Pathan"])
+            doctor_name_entry.grid(row=0, column=1, sticky="w")
+
+
+            doctor_degree_label = ttk.Label(doctor_details_frame, text="Doctor's Degree: ")
+            doctor_degree_label.grid(row=1, column=0, sticky="e")
+            doctor_degree_entry = ttk.Combobox(doctor_details_frame, values=["MBBS", "MS", "MD"])
+            doctor_degree_entry.grid(row=1, column=1, sticky="w")
+
+
+       
+
+
+
+            
+
+
+        ipd_billing_button=ttk.Button(patient_detail_ipd,text="Billing",command=ipd_billing_section)
+        # billing section func to be implemented
+        ipd_billing_button.grid(row=13 , column= 3,sticky=tk.S)
         
+        
+
+
+        '''ipd billing ends'''
+        
+    
         
         def print_every():
             pdf = canvas.Canvas("hello.pdf")
