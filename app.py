@@ -92,6 +92,25 @@ def draw_multiline_text(canvas, text, x, y, width, height, font_size):
 
     return remaining_height
 
+
+
+class Patient():
+    def __init__(self, mrd,fn,mn,ln,age,sex,address,mob,land,misc):
+        self.mrd = mrd
+        self.fn = fn
+        self.mn = mn
+        self.ln = ln
+        self.age = age
+        self.sex = sex
+        self.address = address
+        self.mob = mob
+        self.land = land
+        self.misc = misc
+        
+
+
+
+
 def new_patient():
     
     def validateSubmit(mrd,fn,mn,ln,age,sex,address,mob,land,misc):
@@ -236,20 +255,8 @@ def new_patient():
 
     validateSubmit = partial(validateSubmit, mrd,fn,mn,ln,age,sex,address,mob,land,misc)
     submitButton = ttk.Button(tab1, text="Submit", command=validateSubmit).grid(row=20, column=0)
-
-
-
-
-
-
-
-
-
-
-
-
-
     
+
 def old_patient():
     
     def validateSubmit(mrd,fn,mn,ln,age,sex,address,mob,land,misc):
@@ -399,21 +406,10 @@ def old_patient():
    
 
 
-class Patient():
-    def __init__(self, mrd,fn,mn,ln,age,sex,address,mob,land,misc):
-        self.mrd = mrd
-        self.fn = fn
-        self.mn = mn
-        self.ln = ln
-        self.age = age
-        self.sex = sex
-        self.address = address
-        self.mob = mob
-        self.land = land
-        self.misc = misc
-        
+
+
 def main_page():
-     
+    # Toplevel() is a class in Tkinter used to create independent windows (also known as "top-level windows" or "child windows") that are separate from the main application window (Tk() window). 
     app = Toplevel(root)
 
     # retrieve the width of the screen where the app window is currently located.
@@ -425,8 +421,10 @@ def main_page():
     # sets the geometry of the app window to be equal to the width and height of the screen
     app.geometry("%dx%d" % (screen_width, screen_height))
     
+    # creates a notebook-style tab control (ttk.Notebook) inside the app window. The tabControl variable is used to reference this tab control.
     tabControl = ttk.Notebook(app)
     
+    # creates a frame (ttk.Frame) named tab1 to serve as the content of the first tab. This frame is added as a tab to the tabControl notebook.
     tab1 = ttk.Frame(tabControl)
     # tab 2
     tab2 = ttk.Frame(tabControl)
@@ -437,36 +435,54 @@ def main_page():
     tabControl.add(tab2, text ='In Patient Department')
 
 
-    
+    # This packs the tabControl notebook inside the app window, causing it to expand to fill the available space in both the horizontal and vertical directions.
     tabControl.pack(expand = 1, fill ="both")
     
+    # This creates a button (ttk.Button) inside tab1 with the specified text label "New Patient" and associates it with the "new_patient" function. The button is positioned using the grid geometry manager at row 1, column 0 within tab1.
     ttk.Button(tab1, text="New Patient", command=new_patient).grid(row=1, column=0) 
     # button in row 1 , col 1 -- "old_patient" function
     ttk.Button(tab1, text="Old Patient", command=old_patient).grid(row=1, column=1)
-
     
+
+
     global patient_selected
     global cur_pat
 
 
     def patient_selected(doc):
         global cur_pat
-        
+        # doc is list of values : Values from table , where we clicked and get into here
+        # assign those values to new list called cur_pat
         cur_pat = doc
         # retrieve a database named patient_data using client object 
         db = client.get_database('patient_data')
         # select a collection named 'patient_name_age' and assign it to a variable 
         collection = db['patient_name_age']
-    
+        
+
+        # here we will perform database query using pymongo library 
+        # we will run a query to find a specific document in MongoDB collection 
         cursor = collection.find({"$and": [
                             {"first_name": {"$regex": str(doc[2]), "$options": "i"}},
                             {"middle_name": {"$regex": str(doc[3]), "$options": "i"}},
                             {"last_name": {"$regex": str(doc[4]), "$options": "i"}},
                         ]})
-        
+        # in above query we have used cursor object which can be used to iterate over retrieved documents 
+        # construct a regex pattern using value present at doc[2] (option i makes regex case insensitive)
+        # and the above regex with another regex which is created using value present at doc[3] and further and this with regex created using value present at doc[4]
+
+        # anding them essentially created a complete regex = {first name , middle name, last name}
+        # we then find it in collection , and return to cursor
+
+
+
+        # lets say cursor is list and it will store the matched item from collection
+
+        # let us store value present at cursor[0] in var document ( i can see from mongo db id that cursor[0] represents _id for selected person )
 
         document = cursor[0]
 
+        # so the name that we will display on top can be created by concating doc[2] , doc[3] , doc[4] from table value lists
 
         name = doc[2] + ' ' + doc[3] + " " + doc[4]
 
@@ -483,7 +499,7 @@ def main_page():
         patient_info_frame.grid(row = 2, column = 0)
         
 
-        
+        # This line creates a label widget inside the patient_info_frame displaying the patient's name. The label's text is set to "Name: " followed by the value of the name variable. The label is placed in row 3 and column 0 within patient_info_frame.
         ttk.Label(patient_info_frame, text="Name: "+ name, borderwidth=3, relief="ridge").grid(row = 3, column= 0)
         ttk.Label(patient_info_frame, text="Age: " +str(doc[5]), borderwidth=3, relief="ridge").grid(row = 3, column= 1)
         ttk.Label(patient_info_frame, text="Sex: "+str(doc[6]), borderwidth=3, relief="ridge").grid(row = 3, column= 2)
@@ -495,6 +511,8 @@ def main_page():
         # create a new frame , named as below , inside tab1 called patient details
         patient_detail_frame = ttk.LabelFrame(tab1, text = "Patient Details")
         patient_detail_frame.grid(row = 4, column = 0)
+
+
 
 
         def chief_complaints(event):
@@ -509,33 +527,11 @@ def main_page():
             history.geometry("500x500")
         
 
-        ttk.Label(patient_detail_frame, text="COMPLAINTS").grid(row=3, column=0)
-        
-        complaintxt = Text(patient_detail_frame, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        complaintxt.grid(row=4, column=0)
-        
-        complaintxt.insert(END, "Complaints")
 
-        complaintxt.bind("<Double-Button-1>", chief_complaints, add="+")
-        
-        
-        
-        
-        
-        ttk.Label(patient_detail_frame, text="HISTORY").grid(row=5, column=0)
-        historytxt = Text(patient_detail_frame, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        historytxt.grid(row=6, column=0)
-        
-        historytxt.insert(END, "History")
-
-        historytxt.bind("<Double-Button-1>", history_event, add="+")
-
+        def exam(event):
+            exam = Toplevel(root)
+            exam.geometry("500x500")
+            
         def diagram(event):
             diagram = Toplevel(root)
             diagram.geometry("500x500")
@@ -558,53 +554,17 @@ def main_page():
                     
             select_image()
            
-                       
+
+                
+                
+            
+            
+            
             
         def diagnosis_event(event):
             diagnosis = Toplevel(root)
             diagnosis.geometry("500x500")
             
-        
-        ttk.Label(patient_detail_frame, text="DIAGRAM").grid(row=5, column=1)
-        diagramtxt = Text(patient_detail_frame, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        diagramtxt.grid(row=6, column=1)
-        
-        diagramtxt.insert(END, "Diagram")
-        diagramtxt.bind("<Double-Button-1>", diagram, add="+")
-            
-        
-
-
-
-
-        ttk.Label(patient_detail_frame, text="DIAGNOSIS").grid(row=3, column=2)
-        diagnosistxt = Text(patient_detail_frame, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        diagnosistxt.grid(row=4, column=2)
-        
-        diagnosistxt.insert(END, "Diagnosis")
-        diagnosistxt.bind("<Double-Button-1>", diagnosis_event, add="+")
-
-
-        def exam(event):
-            exam = Toplevel(root)
-            exam.geometry("500x500")
-
-
-        ttk.Label(patient_detail_frame, text="EXAMINATION").grid(row=3, column=1)
-        examtxt = Text(patient_detail_frame, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        examtxt.grid(row=4, column=1)
-        
-        examtxt.insert(END, "Examination")
-        examtxt.bind("<Double-Button-1>", exam, add="+")
 
 
 
@@ -615,11 +575,12 @@ def main_page():
         
         
             
+        
             
         def chief_medicine(event):
-            
+            # This line creates a new top-level window (a pop-up window) and assigns it to the variable medicine. The Toplevel function is used to create a new window, and root (presumably the main application window) is passed as the parent window, indicating that medicine is a child window of root
             medicine = Toplevel(root)
-            
+            # his line sets an attribute of the medicine window to make it display in fullscreen mode. The attributes method is used to set various attributes of the window, and "-fullscreen" is the attribute specifying fullscreen mode. The value True indicates that fullscreen mode is enabled.
             medicine.attributes("-fullscreen", True)
 
             screen_width = medicine.winfo_screenwidth()
@@ -810,35 +771,8 @@ def main_page():
             button = ttk.Button(medicine_frame, text="Print", command=screenshot)
             button.grid(row = 12, column= 4, sticky=tk.S)
             
-        ttk.Label(patient_detail_frame, text="ADVISED").grid(row=5, column=2)
-        advisedtxt = Text(patient_detail_frame, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        advisedtxt.grid(row=6, column=2)
-        
-        advisedtxt.insert(END, "Advised")
-        advisedtxt.bind("<Double-Button-1>", advised_event, add="+")
-        
-
-
-
-
-
-
-
-        
-        ttk.Label(patient_detail_frame, text="MEDICINE").grid(row=3, column=3)
-        medicinetxt = Text(patient_detail_frame, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        medicinetxt.grid(row=4, column=3)
-        
-        medicinetxt.insert(END, "Medicine")
-        medicinetxt.bind("<Double-Button-1>", chief_medicine, add="+")
-
-
+            
+            
             
         def prescription(event):
             prescription = Toplevel(root)
@@ -1191,6 +1125,136 @@ def main_page():
         medicine = document['medicine']
         history = document['history']
         advised = document['advised'] 
+            
+
+
+
+
+
+
+
+
+
+
+
+
+        ttk.Label(patient_detail_frame, text="COMPLAINTS").grid(row=3, column=0)
+        # This line creates a text widget named complaintxt within the patient_detail_frame. The text widget is configured to have a height of 10 lines, a width of 25 characters, and a light yellow background color.
+        complaintxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        # This line specifies the position of the complaintxt text widget within the patient_detail_frame using the grid geometry manager. It is placed in row 4 and column 0.
+        complaintxt.grid(row=4, column=0)
+        # This line inserts the string "Complaints" at the end (i.e., after any existing text) of the complaintxt text widget.
+        complaintxt.insert(END, "Complaints")
+
+        # This line binds the <Double-Button-1> event (double-click of the left mouse button) to the chief_complaints function when it occurs within the complaintxt text widget. The add="+" argument ensures that this binding does not replace any existing bindings for the same event.
+        complaintxt.bind("<Double-Button-1>", chief_complaints, add="+")
+        
+        
+        
+        
+
+
+        
+        
+        
+        ttk.Label(patient_detail_frame, text="HISTORY").grid(row=5, column=0)
+        historytxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        historytxt.grid(row=6, column=0)
+        
+        historytxt.insert(END, "History")
+
+        historytxt.bind("<Double-Button-1>", history_event, add="+")
+        
+        
+
+
+
+
+        
+        ttk.Label(patient_detail_frame, text="EXAMINATION").grid(row=3, column=1)
+        examtxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        examtxt.grid(row=4, column=1)
+        
+        examtxt.insert(END, "Examination")
+        examtxt.bind("<Double-Button-1>", exam, add="+")
+        
+
+
+
+
+        
+        ttk.Label(patient_detail_frame, text="DIAGRAM").grid(row=5, column=1)
+        diagramtxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        diagramtxt.grid(row=6, column=1)
+        
+        diagramtxt.insert(END, "Diagram")
+        diagramtxt.bind("<Double-Button-1>", diagram, add="+")
+            
+        
+
+
+
+
+        ttk.Label(patient_detail_frame, text="DIAGNOSIS").grid(row=3, column=2)
+        diagnosistxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        diagnosistxt.grid(row=4, column=2)
+        
+        diagnosistxt.insert(END, "Diagnosis")
+        diagnosistxt.bind("<Double-Button-1>", diagnosis_event, add="+")
+        
+        
+
+
+
+
+
+
+        ttk.Label(patient_detail_frame, text="ADVISED").grid(row=5, column=2)
+        advisedtxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        advisedtxt.grid(row=6, column=2)
+        
+        advisedtxt.insert(END, "Advised")
+        advisedtxt.bind("<Double-Button-1>", advised_event, add="+")
+        
+
+
+
+
+
+
+
+        
+        ttk.Label(patient_detail_frame, text="MEDICINE").grid(row=3, column=3)
+        medicinetxt = Text(patient_detail_frame, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        medicinetxt.grid(row=4, column=3)
+        
+        medicinetxt.insert(END, "Medicine")
+        medicinetxt.bind("<Double-Button-1>", chief_medicine, add="+")
+        
+        
+
+
+
 
 
         ttk.Label(patient_detail_frame, text="PRESCRIPTION").grid(row=5, column=3)
@@ -1202,12 +1266,164 @@ def main_page():
         
         prescriptiontxt.insert(END, "Prescription:")
         prescriptiontxt.bind("<Double-Button-1>", prescription, add="+")
+        
+        def new_save():
+            filter = {"$and": [
+                                {"first_name": {"$regex": str(doc[2]), "$options": "i"}},
+                                {"middle_name": {"$regex": str(doc[3]), "$options": "i"}},
+                                {"last_name": {"$regex": str(doc[4]), "$options": "i"}},
+                            ]}
 
 
+            global img_data
+            result = collection.find_one(filter)
+            source_dict = dict(result)
+            new_id = ObjectId()
+            today_string_with_timestamp = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            source_dict['complaints'] = complaintxt.get("1.0",'end-1c')
+            source_dict['examination'] = examtxt.get("1.0",'end-1c')
+            source_dict['diagnosis'] = diagnosistxt.get("1.0",'end-1c')
+            source_dict['medicine'] = medicinetxt.get("1.0",'end-1c')
+            source_dict['history'] = historytxt.get("1.0",'end-1c')
+            source_dict['advised'] = advisedtxt.get("1.0",'end-1c')
+            source_dict['date'] = today_string_with_timestamp
+            source_dict['_id'] = new_id
+            
+            
+            
+            source_dict['doatxt'] = doatxt.get()
+            source_dict['t1txt'] = t1txt.get()
+            source_dict['dodtxt'] = dodtxt.get()
+            source_dict['t2txt'] = t2txt.get()
+            source_dict['cftxt'] = cftxt.get("1.0",'end-1c')
+            source_dict['opnotestxt'] = opnotestxt.get("1.0",'end-1c')
+            source_dict['investigationtxt'] = investigationtxt.get("1.0",'end-1c')
+            source_dict['postmedicinetxt'] = postmedicinetxt.get("1.0",'end-1c')
+            source_dict['surgeryadvisingtxt'] = surgeryadvisingtxt.get("1.0",'end-1c')
+            source_dict['adviseondischargetxt'] = adviseondischargetxt.get("1.0",'end-1c')
+            
+            
+            
+            
+            
+            
+            source_dict['x'] = x
+            source_dict['medname'] = medname
+            source_dict['medtype'] = medtype
+            source_dict['medadvice'] = medadvice
+            source_dict['days'] = days
+            source_dict['dwm'] = dwm
+            source_dict['qty'] = qty
+            source_dict['img_data'] = img_data
+            print(img_data)            
+            collection.insert_one(source_dict)
+        
+        
+        new_button = ttk.Button(patient_detail_frame, text="Save", command=new_save)
+        new_button.grid(row = 12, column= 4, sticky=tk.S)
+        
+        
+        def view_history():
+            view_hist = Toplevel(root)
+            view_hist.geometry("1000x1000")
+            global cur_pat
+            
+            
+            def retrive_data(date):
+                db = client.get_database('patient_data')
+                collection = db['patient_name_age']
+                new_col = collection.find({"$and": [
+                                    {"first_name": {"$regex": str(cur_pat[2]), "$options": "i"}},
+                                    {"middle_name": {"$regex": str(cur_pat[3]), "$options": "i"}},
+                                    {"last_name": {"$regex": str(cur_pat[4]), "$options": "i"}},
+                                    {"date": {"$regex": str(date), "$options": "i"}}
+                                ]})
+                
+                
+                
+                for document in new_col:
 
+                    string = ""
+                    string += str(document['complaints'])
+                    string+="\n\n"
+                    string += str(document['history'])
+                    string+="\n\n"
+                    string += str(document['examination'])
+                    string+="\n\n"
+                    string += str(document['diagnosis'])
+                    string+="\n\n"
+                    string += str(document['advised'])
+                    string+="\n\n"
+                    
+                    for i in range(len(document['x'])):
+                        
+                        string += document['medname'][i] + "            "
+                        string += document['medtype'][i] + "            "
+                        string += document['medadvice'][i] + "            "
+                        string += "in " + document['x'][i] + "         "
+                        string += document['days'][i]+" days" + "            "
+                        string += "("+document['qty'][i]+")"
+                        string += "\n"
+                        string += "--------------------------------"
+                        string += "\n"
+                    
+                    
+                    output_path = "output.docx"
 
+                    doc = Document()
+                    doc.add_paragraph(string)
+                    
+                        
+                    try:
+                        bin_data  = document['img_data']
+                        print(bin_data)
+                        image_stream = io.BytesIO(bin_data)
+                        paragraph = doc.add_paragraph()
+                        run = paragraph.add_run()
+                        
+                        # Insert the image into the run
+                        run.add_picture(image_stream, width=Inches(4))  
+                    except:
+                        pass
+                    
+                    doc.save(output_path)
+
+                    filename = "output.docx"
+                    
+                    if os.name == "posix":  # for macOS or Linux
+                        os.system("open " + filename)
+                    elif os.name == "nt":  # for Windows
+                        os.system("start " + filename)
+                
+
+                
+            db = client.get_database('patient_data')
+            collection = db['patient_name_age']
+            
+            cursor = collection.find({"$and": [
+                                {"first_name": {"$regex": str(cur_pat[2]), "$options": "i"}},
+                                {"middle_name": {"$regex": str(cur_pat[3]), "$options": "i"}},
+                                {"last_name": {"$regex": str(cur_pat[4]), "$options": "i"}},
+                            ]})
+            data = [doc for doc in cursor]
+            new_dict = {}
+            row = 0
+            
+            for doc in data:
+                values = [str(v) for v in doc.values()]
+                ttk.Button(view_hist, text=str(values[-1]), command=lambda date=values[-1]: retrive_data(date)).grid(row = row, column= 1, sticky=tk.S)
+                row += 1
+                
+                    
+          
+            
+            
+        
         hist_button = ttk.Button(patient_detail_frame, text="Complete History", command=view_history)
         hist_button.grid(row = 13, column= 4, sticky=tk.S)
+        
+        
+        
 
 
         def billing_section():
@@ -1365,6 +1581,14 @@ def main_page():
                 elif os.name == "nt": 
                     os.system("start " + filename)
 
+
+
+             # Patient Information Frame
+            
+            
+            
+
+
             def print_receipt():
                 # Gather patient, billing, and doctor information
                 patient_info = {
@@ -1412,6 +1636,11 @@ def main_page():
                 # Generate PDF receipt
                 generate_pdf_bill(patient_info, billing_details, doctor_info, total_amount, department, billing_items)
 
+
+            
+            
+            
+            
             
             
             patient_info_frame = ttk.LabelFrame(billing, text="Patient Information")
@@ -1538,9 +1767,19 @@ def main_page():
 
 
             
+
+
         billing_button=ttk.Button(patient_detail_frame,text="Billing",command=billing_section)
         # billing section func to be implemented
         billing_button.grid(row=13 , column= 3,sticky=tk.S)
+
+
+
+
+
+
+
+
 
 
 
@@ -1581,10 +1820,76 @@ def main_page():
         ttk.Label(patient_info_ipd, text="Age: " +str(doc[5]), borderwidth=3, relief="ridge").grid(row = 3, column= 1)
         ttk.Label(patient_info_ipd, text="Sex: "+str(doc[6]), borderwidth=3, relief="ridge").grid(row = 3, column= 2)
         ttk.Label(patient_info_ipd, text="Mob: "+str(doc[8]), borderwidth=3, relief="ridge").grid(row = 3, column= 3)
-        ttk.Label(patient_info_ipd, text="Date: "+today_string, borderwidth=3, relief="ridge").grid(row = 3, column= 4)        
-            
+        ttk.Label(patient_info_ipd, text="Date: "+today_string, borderwidth=3, relief="ridge").grid(row = 3, column= 4)
+        
+        patient_detail_ipd = ttk.LabelFrame(tab2, text = "Patient Details IPD")
+        patient_detail_ipd.grid(row = 4, column = 0)
+        
+        
+        ttk.Label(patient_detail_ipd, text="Clinical Findings").grid(row=3, column=0)
+        cftxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        cftxt.grid(row=4, column=0)
+        
+        cftxt.insert(END, "Clinical Findings")
+        
+        
+        ttk.Label(patient_detail_ipd, text="Operation Notes").grid(row=5, column=0)
+        opnotestxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        opnotestxt.grid(row=6, column=0)
+        
+        opnotestxt.insert(END, "Operation Notes")
+        
+        
+        
+        ttk.Label(patient_detail_ipd, text="Invesitgation").grid(row=3, column=1)
+        investigationtxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        investigationtxt.grid(row=4, column=1)
+        
+        investigationtxt.insert(END, "Invesitgation")
+        
+        
+        ttk.Label(patient_detail_ipd, text="Post Operative Medicines").grid(row=5, column=1)
+        postmedicinetxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        postmedicinetxt.grid(row=6, column=1)
+        
+        postmedicinetxt.insert(END, "Post Operative Medicines")
 
+        
 
+        ttk.Label(patient_detail_ipd, text="Surgery Advising").grid(row=3, column=2)
+        surgeryadvisingtxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        surgeryadvisingtxt.grid(row=4, column=2)
+        
+        surgeryadvisingtxt.insert(END, "Surgery Advising")
+        
+        ttk.Label(patient_detail_ipd, text="Advice on Discharge").grid(row=5, column=2)
+        adviseondischargetxt = Text(patient_detail_ipd, height = 10,
+                        width = 25,
+                        bg = "light yellow")
+        
+        adviseondischargetxt.grid(row=6, column=2)
+        
+        adviseondischargetxt.insert(END, "Advice on Discharge")
+        
+        ipd_button = ttk.Button(patient_detail_ipd, text="Save", command=new_save)
+        ipd_button.grid(row = 12, column= 4, sticky=tk.S)
+        
+        
         def view_ipd_history():
             view_hist = Toplevel(root)
             view_hist.geometry("1000x1000")
@@ -1667,9 +1972,19 @@ def main_page():
                 ttk.Button(view_hist, text=str(values[-1]), command=lambda date=values[-1]: retrive_data(date)).grid(row = row, column= 1, sticky=tk.S)
                 row += 1
                 
+                    
+          
+            
+            
+        
         ipd_hist_button = ttk.Button(patient_detail_ipd, text="IPD History", command=view_ipd_history)
-        ipd_hist_button.grid(row = 13, column= 4, sticky=tk.S)     
+        ipd_hist_button.grid(row = 13, column= 4, sticky=tk.S)
+        
+        
+        
 
+
+        
         def ipd_billing_section():
             billing = Toplevel(root)
             billing.attributes("-fullscreen", True)
@@ -2121,7 +2436,8 @@ def main_page():
 
         '''ipd billing ends'''
         
-    
+        
+        
         
         def print_every():
             pdf = canvas.Canvas("hello.pdf")
@@ -2140,70 +2456,9 @@ def main_page():
             elif os.name == "nt":  # for Windows
                 os.system("start " + filename)
         
-        patient_detail_ipd = ttk.LabelFrame(tab2, text = "Patient Details IPD")
-        patient_detail_ipd.grid(row = 4, column = 0)
-        
-        
-        ttk.Label(patient_detail_ipd, text="Clinical Findings").grid(row=3, column=0)
-        cftxt = Text(patient_detail_ipd, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        cftxt.grid(row=4, column=0)
-        
-        cftxt.insert(END, "Clinical Findings")     
-
-        ttk.Label(patient_detail_ipd, text="Operation Notes").grid(row=5, column=0)
-        opnotestxt = Text(patient_detail_ipd, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        opnotestxt.grid(row=6, column=0)
-        
-        opnotestxt.insert(END, "Operation Notes")
         
         
         
-        ttk.Label(patient_detail_ipd, text="Invesitgation").grid(row=3, column=1)
-        investigationtxt = Text(patient_detail_ipd, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        investigationtxt.grid(row=4, column=1)
-        
-        investigationtxt.insert(END, "Invesitgation")
-
-        ttk.Label(patient_detail_ipd, text="Post Operative Medicines").grid(row=5, column=1)
-        postmedicinetxt = Text(patient_detail_ipd, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        postmedicinetxt.grid(row=6, column=1)
-        
-        postmedicinetxt.insert(END, "Post Operative Medicines")
-
-        
-
-        ttk.Label(patient_detail_ipd, text="Surgery Advising").grid(row=3, column=2)
-        surgeryadvisingtxt = Text(patient_detail_ipd, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        surgeryadvisingtxt.grid(row=4, column=2)
-        
-        surgeryadvisingtxt.insert(END, "Surgery Advising")
-        
-        ttk.Label(patient_detail_ipd, text="Advice on Discharge").grid(row=5, column=2)
-        adviseondischargetxt = Text(patient_detail_ipd, height = 10,
-                        width = 25,
-                        bg = "light yellow")
-        
-        adviseondischargetxt.grid(row=6, column=2)
-        
-        adviseondischargetxt.insert(END, "Advice on Discharge")
-        
-        ipd_button = ttk.Button(patient_detail_ipd, text="Save", command=new_save)
-        ipd_button.grid(row = 12, column= 4, sticky=tk.S)
         
 root = Tk()
 root.geometry("400x150")
@@ -2227,9 +2482,6 @@ passwordEntry = ttk.Entry(root, textvariable=password, show='*').grid(row=1, col
 validateLogin = partial(validateLogin, username, password)
 #login button
 loginButton = ttk.Button(root, text="Login", command=validateLogin).grid(row=4, column=0)  
-
-
-
 
 
 root.mainloop()
