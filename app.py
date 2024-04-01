@@ -116,7 +116,7 @@ def new_patient():
     def validateSubmit(mrd,fn,mn,ln,age,sex,address,mob,land,misc):
         today = datetime.date.today()
         new_pat = Patient(mrd,fn,mn,ln,age,sex,address,mob,land,misc);
-        if ((mob.get().isdigit()) and (land.get().isdigit()) and age.get().isdigit()) and fn.get().isalpha() and mn.get().isalpha() and ln.get().isalpha() and sex.get().isalpha() and address.get().isalnum():
+        if ((mob.get().isdigit()) and (land.get().isdigit()) and age.get().isdigit()) and fn.get().isalpha() and mn.get().isalpha() and ln.get().isalpha() and sex.get().isalpha():
             today_string = today.strftime('%d/%m/%Y')
             document = {"MRD":mrd.get(),"first_name":fn.get(),"middle_name":mn.get(),
                         "last_name":ln.get(),"age":age.get(),"sex":sex.get(),"address":address.get(),"mobile_no":mob.get(),
