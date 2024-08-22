@@ -556,6 +556,15 @@ def main_page():
                 upsert=True
             )
 
+        def delete_predefined_entry(category, entry):
+            db = client['patient_data']
+            collection = db['predefined_texts']
+            collection.update_one(
+                {"category": category},
+                {"$pull": {"entries": entry}}
+            )
+   
+
         def chief_complaints(event):
             # Retrieve the list of predefined entries for chief complaints
             entries = get_predefined_entries("chief_complaints")
@@ -1494,10 +1503,50 @@ def main_page():
         
         new_button = ttk.Button(patient_detail_frame, text="Save", command=new_save)
         new_button.grid(row = 12, column= 4, sticky=tk.S)
+        def open_delete_entry_window():
+            delete_entry_window = Toplevel(root)
+            delete_entry_window.title("Delete Entry")
+            delete_entry_window.geometry("400x300")
+
+            # Dropdown menu for selecting category
+            category_var = StringVar()
+            category_choices = [
+                'chief_complaints', 'history', 'examination', 'diagnosis', 'advised',
+                'clinical_findings', 'operation_notes', 'investigation', 'post_operative_medicines', 'surgery_advising', 'advice_on_discharge'
+            ]
+            category_dropdown = ttk.Combobox(delete_entry_window, textvariable=category_var, values=category_choices)
+            category_dropdown.pack(pady=10)
+
+            # Dropdown menu for selecting entry to delete
+            entry_var = StringVar()
+            entry_dropdown = ttk.Combobox(delete_entry_window, textvariable=entry_var)
+            entry_dropdown.pack(pady=10)
+
+            # Update entries dropdown when category changes
+            def update_entries_dropdown(*args):
+                category = category_var.get()
+                entries = get_predefined_entries(category)
+                entry_dropdown['values'] = entries
+
+            category_var.trace('w', update_entries_dropdown)
+
+            # Button to delete the selected entry
+            def delete_entry():
+                category = category_var.get()
+                entry = entry_var.get()
+                if category and entry:
+                    delete_predefined_entry(category, entry)
+                    messagebox.showinfo("Success", f"Deleted '{entry}' from {category}")
+                    update_entries_dropdown()  # Refresh the entries dropdown
+
+            delete_button = Button(delete_entry_window, text="Delete Entry", command=delete_entry)
+            delete_button.pack(pady=20)
 
         ttk.Button(patient_detail_frame, text="Add Predefined Text", command=open_add_entry_window).grid(row = 12, column= 6, sticky=tk.S)
-        
-        
+        ttk.Button(patient_detail_frame, text="Delete Predefined Text", command=open_delete_entry_window).grid(row = 13, column= 6, sticky=tk.S)
+
+
+
         def view_history():
             view_hist = Toplevel(root)
             view_hist.geometry("1000x1000")
@@ -2143,7 +2192,8 @@ def main_page():
         ipd_button.grid(row = 12, column= 4, sticky=tk.S)
 
         ttk.Button(patient_detail_ipd, text="Add Predefined Text", command=open_add_ipd_entry_window).grid(row = 12, column= 6, sticky=tk.S)
-        
+        ttk.Button(patient_detail_ipd, text="Delete Predefined Text", command=open_delete_entry_window).grid(row = 13, column= 6, sticky=tk.S)
+
         cftxt.bind("<Double-Button-1>", clinical_findings_event)
         opnotestxt.bind("<Double-Button-1>", operation_notes_event)
         investigationtxt.bind("<Double-Button-1>", investigation_event)
