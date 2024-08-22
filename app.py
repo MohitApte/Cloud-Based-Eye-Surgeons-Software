@@ -1999,7 +1999,85 @@ def main_page():
         
         patient_detail_ipd = ttk.LabelFrame(tab2, text = "Patient Details IPD")
         patient_detail_ipd.grid(row = 4, column = 0)
-        
+
+        def clinical_findings_event(event):
+            entries = get_predefined_entries("clinical_findings")
+            create_selection_window("Select Clinical Finding", cftxt, entries)
+
+        def operation_notes_event(event):
+            entries = get_predefined_entries("operation_notes")
+            create_selection_window("Select Operation Note", opnotestxt, entries)
+
+        def investigation_event(event):
+            entries = get_predefined_entries("investigation")
+            create_selection_window("Select Investigation", investigationtxt, entries)
+
+        def post_op_medicines_event(event):
+            entries = get_predefined_entries("post_operative_medicines")
+            create_selection_window("Select Post Operative Medicine", postmedicinetxt, entries)
+
+        def surgery_advising_event(event):
+            entries = get_predefined_entries("surgery_advising")
+            create_selection_window("Select Surgery Advising", surgeryadvisingtxt, entries)
+
+        def advice_on_discharge_event(event):
+            entries = get_predefined_entries("advice_on_discharge")
+            create_selection_window("Select Advice on Discharge", adviseondischargetxt, entries)
+
+        def create_selection_window(title, text_widget, entries):
+            selection_window = Toplevel(root)
+            selection_window.title(title)
+            selection_window.geometry("300x500")
+
+            scrollbar = Scrollbar(selection_window)
+            scrollbar.pack(side=RIGHT, fill=Y)
+
+            listbox = Listbox(selection_window, yscrollcommand=scrollbar.set)
+            for entry in entries:
+                listbox.insert(END, entry)
+            listbox.pack(side=LEFT, fill=BOTH)
+            scrollbar.config(command=listbox.yview)
+
+            def insert_entry():
+                current_text = text_widget.get(1.0, "end-1c")
+                selected_text = listbox.get(listbox.curselection())
+                new_text = current_text + "\n" + selected_text if current_text else selected_text
+                text_widget.delete(1.0, END)
+                text_widget.insert(END, new_text)
+                selection_window.destroy()
+
+            listbox.bind('<Double-1>', lambda x: insert_entry())
+
+        def open_add_ipd_entry_window():
+            add_ipd_entry_window = Toplevel(root)
+            add_ipd_entry_window.title("Add New Entry for IPD")
+            add_ipd_entry_window.geometry("400x250")
+
+            # Dropdown menu for selecting category
+            category_var = StringVar()
+            category_choices = ['clinical_findings', 'operation_notes', 'investigation', 'post_operative_medicines', 'surgery_advising', 'advice_on_discharge']
+            category_dropdown = ttk.Combobox(add_ipd_entry_window, textvariable=category_var, values=category_choices)
+            category_dropdown.pack(pady=10)
+
+            # Label and entry widget for new entry
+            Label(add_ipd_entry_window, text="New Entry:").pack(pady=5)
+            new_entry_var = StringVar()
+            new_entry_widget = Entry(add_ipd_entry_window, textvariable=new_entry_var)
+            new_entry_widget.pack(pady=10)
+
+            # Button to add new entry to selected category
+            def add_to_category():
+                category = category_var.get()
+                new_entry = new_entry_var.get().strip()
+                if category and new_entry:
+                    add_predefined_entry(category, new_entry)
+                    messagebox.showinfo("Success", f"Added '{new_entry}' to {category}")
+                    new_entry_var.set("")  # Clear the entry widget after successful addition
+
+            add_button = Button(add_ipd_entry_window, text="Add Entry", command=add_to_category)
+            add_button.pack(pady=20)
+
+
         
         ttk.Label(patient_detail_ipd, text="Clinical Findings").grid(row=3, column=0)
         cftxt = Text(patient_detail_ipd, height = 10,
@@ -2063,7 +2141,16 @@ def main_page():
         
         ipd_button = ttk.Button(patient_detail_ipd, text="Save", command=new_save)
         ipd_button.grid(row = 12, column= 4, sticky=tk.S)
+
+        ttk.Button(patient_detail_ipd, text="Add Predefined Text", command=open_add_ipd_entry_window).grid(row = 12, column= 6, sticky=tk.S)
         
+        cftxt.bind("<Double-Button-1>", clinical_findings_event)
+        opnotestxt.bind("<Double-Button-1>", operation_notes_event)
+        investigationtxt.bind("<Double-Button-1>", investigation_event)
+        postmedicinetxt.bind("<Double-Button-1>", post_op_medicines_event)
+        surgeryadvisingtxt.bind("<Double-Button-1>", surgery_advising_event)
+        adviseondischargetxt.bind("<Double-Button-1>", advice_on_discharge_event)
+
         
         def view_ipd_history():
             view_hist = Toplevel(root)
