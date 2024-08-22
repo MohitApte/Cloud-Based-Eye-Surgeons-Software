@@ -512,25 +512,148 @@ def main_page():
         patient_detail_frame = ttk.LabelFrame(tab1, text = "Patient Details")
         patient_detail_frame.grid(row = 4, column = 0)
 
+        def open_add_entry_window():
+            add_entry_window = Toplevel(root)
+            add_entry_window.title("Add New Entry")
+            add_entry_window.geometry("400x200")
 
+            # Dropdown menu for selecting category
+            category_var = StringVar()
+            category_choices = ['chief_complaints', 'history', 'examination', 'diagnosis', 'advised']  # Add more categories as needed
+            category_dropdown = ttk.Combobox(add_entry_window, textvariable=category_var, values=category_choices)
+            category_dropdown.pack(pady=10)
 
+            # Entry widget for new entry
+            new_entry_var = StringVar()
+            new_entry_widget = Entry(add_entry_window, textvariable=new_entry_var)
+            new_entry_widget.pack(pady=10)
+
+            # Function to add new entry to selected category
+            def add_to_category():
+                category = category_var.get()
+                new_entry = new_entry_var.get().strip()
+                if category and new_entry:
+                    add_predefined_entry(category, new_entry)
+                    messagebox.showinfo("Success", f"Added '{new_entry}' to {category}")
+
+            add_button = Button(add_entry_window, text="Add Entry", command=add_to_category)
+            add_button.pack(pady=10)
+
+        
+
+        def get_predefined_entries(category):
+            db = client['patient_data']
+            collection = db['predefined_texts']
+            document = collection.find_one({"category": category})
+            return document['entries'] if document else []
+
+        def add_predefined_entry(category, entry):
+            db = client['patient_data']
+            collection = db['predefined_texts']
+            collection.update_one(
+                {"category": category},
+                {"$addToSet": {"entries": entry}},
+                upsert=True
+            )
 
         def chief_complaints(event):
-            complaints = Toplevel(root)
-            complaints.geometry("500x500")
+            # Retrieve the list of predefined entries for chief complaints
+            entries = get_predefined_entries("chief_complaints")
+
+            # Create a top-level window with a listbox
+            complaints_window = Toplevel(root)
+            complaints_window.title("Select Chief Complaint")
+            complaints_window.geometry("300x500")
+
+            # Scrollbar
+            scrollbar = Scrollbar(complaints_window)
+            scrollbar.pack(side=RIGHT, fill=Y)
+
+            # Listbox
+            listbox = Listbox(complaints_window, yscrollcommand=scrollbar.set)
+            for entry in entries:
+                listbox.insert(END, entry)
+            listbox.pack(side=LEFT, fill=BOTH)
+            scrollbar.config(command=listbox.yview)
+
+            # Function to insert the selected item into the chief complaints text widget
+            def insert_entry():
+                current_text = complaintxt.get(1.0, "end-1c")  # Get current content from the textbox
+                selected_text = listbox.get(listbox.curselection())  # Get selected item from the listbox
+                if current_text:
+                    new_text = current_text + "\n" + selected_text  # Add a comma if there's already text
+                else:
+                    new_text = selected_text
+                complaintxt.delete(1.0, END)  # Clear the current text
+                complaintxt.insert(END, new_text)  # Insert the new text
+                complaints_window.destroy()  # Close the selection window
+
+
+            listbox.bind('<Double-1>', lambda x: insert_entry())
+
             
         
 
 
         def history_event(event):
-            history = Toplevel(root)
-            history.geometry("500x500")
+            entries = get_predefined_entries("history")
+            history_window = Toplevel(root)
+            history_window.title("Select History Item")
+            history_window.geometry("300x500")
+
+            scrollbar = Scrollbar(history_window)
+            scrollbar.pack(side=RIGHT, fill=Y)
+
+            listbox = Listbox(history_window, yscrollcommand=scrollbar.set)
+            for entry in entries:
+                listbox.insert(END, entry)
+            listbox.pack(side=LEFT, fill=BOTH)
+            scrollbar.config(command=listbox.yview)
+
+            def insert_entry():
+                current_text = historytxt.get(1.0, "end-1c")
+                selected_text = listbox.get(listbox.curselection())
+                if current_text:
+                    new_text = current_text + "\n" + selected_text
+                else:
+                    new_text = selected_text
+                historytxt.delete(1.0, END)
+                historytxt.insert(END, new_text)
+                history_window.destroy()
+
+            listbox.bind('<Double-1>', lambda x: insert_entry())
+
         
 
 
         def exam(event):
-            exam = Toplevel(root)
-            exam.geometry("500x500")
+            entries = get_predefined_entries("examination")
+            exam_window = Toplevel(root)
+            exam_window.title("Select Examination Item")
+            exam_window.geometry("300x500")
+
+            scrollbar = Scrollbar(exam_window)
+            scrollbar.pack(side=RIGHT, fill=Y)
+
+            listbox = Listbox(exam_window, yscrollcommand=scrollbar.set)
+            for entry in entries:
+                listbox.insert(END, entry)
+            listbox.pack(side=LEFT, fill=BOTH)
+            scrollbar.config(command=listbox.yview)
+
+            def insert_entry():
+                current_text = examtxt.get(1.0, "end-1c")
+                selected_text = listbox.get(listbox.curselection())
+                if current_text:
+                    new_text = current_text + "\n" + selected_text
+                else:
+                    new_text = selected_text
+                examtxt.delete(1.0, END)
+                examtxt.insert(END, new_text)
+                exam_window.destroy()
+
+            listbox.bind('<Double-1>', lambda x: insert_entry())
+
             
         def diagram(event):
             diagram = Toplevel(root)
@@ -562,15 +685,65 @@ def main_page():
             
             
         def diagnosis_event(event):
-            diagnosis = Toplevel(root)
-            diagnosis.geometry("500x500")
+            entries = get_predefined_entries("diagnosis")
+            diagnosis_window = Toplevel(root)
+            diagnosis_window.title("Select Diagnosis Item")
+            diagnosis_window.geometry("300x500")
+
+            scrollbar = Scrollbar(diagnosis_window)
+            scrollbar.pack(side=RIGHT, fill=Y)
+
+            listbox = Listbox(diagnosis_window, yscrollcommand=scrollbar.set)
+            for entry in entries:
+                listbox.insert(END, entry)
+            listbox.pack(side=LEFT, fill=BOTH)
+            scrollbar.config(command=listbox.yview)
+
+            def insert_entry():
+                current_text = diagnosistxt.get(1.0, "end-1c")
+                selected_text = listbox.get(listbox.curselection())
+                if current_text:
+                    new_text = current_text + "\n" + selected_text
+                else:
+                    new_text = selected_text
+                diagnosistxt.delete(1.0, END)
+                diagnosistxt.insert(END, new_text)
+                diagnosis_window.destroy()
+
+            listbox.bind('<Double-1>', lambda x: insert_entry())
+
             
 
 
 
         def advised_event(event):
-            advised = Toplevel(root)
-            advised.geometry("500x500")
+            entries = get_predefined_entries("advised")
+            advised_window = Toplevel(root)
+            advised_window.title("Select Advised Action")
+            advised_window.geometry("300x500")
+
+            scrollbar = Scrollbar(advised_window)
+            scrollbar.pack(side=RIGHT, fill=Y)
+
+            listbox = Listbox(advised_window, yscrollcommand=scrollbar.set)
+            for entry in entries:
+                listbox.insert(END, entry)
+            listbox.pack(side=LEFT, fill=BOTH)
+            scrollbar.config(command=listbox.yview)
+
+            def insert_entry():
+                current_text = advisedtxt.get(1.0, "end-1c")
+                selected_text = listbox.get(listbox.curselection())
+                if current_text:
+                    new_text = current_text + "\n" + selected_text
+                else:
+                    new_text = selected_text
+                advisedtxt.delete(1.0, END)
+                advisedtxt.insert(END, new_text)
+                advised_window.destroy()
+
+            listbox.bind('<Double-1>', lambda x: insert_entry())
+
             
         
         
@@ -1321,6 +1494,8 @@ def main_page():
         
         new_button = ttk.Button(patient_detail_frame, text="Save", command=new_save)
         new_button.grid(row = 12, column= 4, sticky=tk.S)
+
+        ttk.Button(patient_detail_frame, text="Add Predefined Text", command=open_add_entry_window).grid(row = 12, column= 6, sticky=tk.S)
         
         
         def view_history():
