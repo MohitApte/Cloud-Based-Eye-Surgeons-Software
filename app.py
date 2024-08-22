@@ -34,7 +34,7 @@ ca = certifi.where()
 
 
 # Universal resourse identification
-uri = "mongodb+srv://mohitapte4:j3ZsXs6FGCnGATZm@cluster0.xmn1i2w.mongodb.net/?retryWrites=true&w=majority"
+uri = ""
 
 # Create a client object of class MongoClient
 client = MongoClient(uri,tlsCAFile=ca)
